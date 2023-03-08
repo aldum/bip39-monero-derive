@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "bip39-monero-derive"
+version = "0.1.0"
+description = "Standalone utility for deriving Monero mnemonic seeds from standard BIP 39 phrases (via SLIP-10)"
+authors = ["aldum <aldum@artixlinux.org>"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "bip39_monero_derive"}]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+python-secp256k1 = "^0.2.0"
+pick = "^2.2.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

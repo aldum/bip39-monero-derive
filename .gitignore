@@ -1,0 +1,8 @@
+__pycache__/
+.idea/
+.history/
+.venv
+.pylintrc
+.vscode
+Makefile
+
