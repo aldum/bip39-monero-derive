@@ -8,11 +8,21 @@ readme = "README.md"
 packages = [{include = "bip39_monero_derive"}]
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = ">=3.9,<3.12"
 python-secp256k1 = "^0.2.0"
 pick = "^2.2.0"
 
+[tool.poetry.group.dev.dependencies]
+black = "^23.1.0"
+stickytape = "^0.2.1"
+pyinstaller = "^5.8.0"
+autopep8 = "^2.0.2"
+pycryptodome = "^3.17"
+bip-utils = "^2.7.0"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+script = "bip39_monero_derive:main"
