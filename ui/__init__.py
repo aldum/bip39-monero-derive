@@ -8,8 +8,13 @@ from pick import pick
 from bip39 import (
     Bip39WordsNum,
     mnemonics_to_seed,
+    validate_checksum,
 )
-from bip39.data import wordlist
+from bip39.data import (
+    wordlist,
+    wordlist_contains,
+    MAX_WORDLEN,
+)
 
 Screen = 'curses._CursesWindow'
 
@@ -18,6 +23,8 @@ prompts = {
 Convert your English BIP39 mnemonic into a 25-word Monero mnemonic according to SLIP10. """,
     "anykey": "Press any key to contine.",
     "bip39_length": "How many words are in your BIP39 mnemonic?",
+    "bip39_word_invalid": "Invalid word. Try again. ",
+    "bip39_invalid": "Invalid mnemonic. Try again. ",
     "bip39_mnem": "Your BIP39 mnemonic: ",
     "bip39_passphrase?": "Do you use a passphrase?",
     "bip39_input_passphrase": "Passphrase: ",
@@ -99,35 +106,41 @@ def advance_line(screen: Screen):
     (my, _) = screen.getmaxyx()
     (y, _) = screen.getyx()
     ny = y + 1
-    if ny >= my:
+    if ny >= my - 1:
         screen.clear()
         ny = 0
     screen.addstr(ny, 0, '')
 
 
 def write_ok(screen: Screen, text: str):
-    screen.addstr(text, curses.color_pair(1))
+    _write_color(screen, text, 1)
 
 
 def write_err(screen: Screen, text: str):
-    screen.addstr(text, curses.color_pair(2))
+    _write_color(screen, text, 2)
+
+
+def _write_color(screen: Screen, text: str, pair: int):
+    # (y, _) = screen.getyx()
+    # screen.addstr(f"{text} {y}", curses.color_pair(1))
+    screen.addstr(text, curses.color_pair(pair))
 
 
 def read_words(screen: Screen, biplen: int) -> List[str]:
-    def validate_word(word: str) -> bool:
-        return word in wordlist
-
     words: List[str] = []
     for n in range(1, biplen + 1):
-        word_valid = False
+        word_valid: bool = False
         while not word_valid:
-            word = read_word(screen, f"Enter word #{n}/{biplen}: ", 8)
-            word_valid = validate_word(word)
+            word = read_word(
+                screen, f"Enter word #{n}/{biplen}: ", MAX_WORDLEN)
+            word_valid = wordlist_contains(word)
+            screen.addstr('\n')
             if word_valid:
-                write_ok(screen, " OK")
+                write_ok(screen, "OK. ")
             else:
-                write_err(screen, " x")
+                write_err(screen, prompts["bip39_word_invalid"])
             advance_line(screen)
+
         words.append(''.join(word))
         print()
 
@@ -145,10 +158,20 @@ def program(screen: Screen):
     biplen = picker(screen, "bip39_length")
 
     screen.clear()
-    words = read_words(screen, biplen)
-    words = read_words("asd", screen)
-    bip39phrase = ' '.join(words)
-    # bip39phrase: str = ' '.join(["bacon"] * biplen)
+    mnem_valid = False
+
+    DEBUG = False
+    if DEBUG:
+        bip39_phrase: str = ' '.join(["bacon"] * biplen)
+    else:
+        while not mnem_valid:
+            words = read_words(screen, biplen)
+            mnem_valid = validate_checksum(words, biplen)
+            if not mnem_valid:
+                write_err(screen, prompts["bip39_invalid"])
+                screen.addstr("\n")
+        bip39_phrase = ' '.join(words)
+
     bippass: bool = yesno_to_bool(picker(screen, "bip39_passphrase?"))
     passphrase = None
     if bippass:

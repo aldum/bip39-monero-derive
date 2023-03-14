@@ -1,3 +1,5 @@
+from typing import Optional
+
 # pylint: disable=C0302
 wordlist = [
   "abandon",
@@ -2049,3 +2051,16 @@ wordlist = [
   "zone",
   "zoo",
 ]
+
+MAX_WORDLEN = 8
+
+m_words_to_idx = {wordlist[i]: i for i in range(len(wordlist))}
+
+def get_word_idx(word: str) -> Optional[int]:
+    try:
+        return m_words_to_idx[word]
+    except KeyError:
+        return None
+
+def wordlist_contains(word: str) -> bool:
+    return get_word_idx(word) is not None

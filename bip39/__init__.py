@@ -4,7 +4,7 @@ import hashlib
 import hmac
 import struct
 from enum import IntEnum, unique
-from typing import Optional
+from typing import List, Optional
 from functools import reduce
 
 from util import *
@@ -19,6 +19,25 @@ class Bip39WordsNum(IntEnum):
     WORDS_NUM_18 = 18
     WORDS_NUM_21 = 21
     WORDS_NUM_24 = 24
+
+    ''' |  ENT  | CS | ENT+CS |  MS  |
+        +-------+----+--------+------+
+        |  128  |  4 |   132  |  12  |
+        |  160  |  5 |   165  |  15  |
+        |  192  |  6 |   198  |  18  |
+        |  224  |  7 |   231  |  21  |
+        |  256  |  8 |   264  |  24  |
+        '''
+
+    def get_checksum_len(self) -> int:
+        ms_to_cs = {
+            12: 4,
+            15: 5,
+            18: 6,
+            21: 7,
+            24: 8,
+        }
+        return ms_to_cs[self]
 
 
 # Total number of words
@@ -61,3 +80,8 @@ def PBKDF2(password, salt, dkLen=16, count=1000, prf=None):
         i += 1
 
     return key[:dkLen]
+
+
+def validate_checksum(seed: List[str], n_words: Bip39WordsNum) -> bool:
+    return False
+
