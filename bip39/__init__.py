@@ -1,13 +1,16 @@
 """BIP 39 handling"""
 
 import hashlib
+from hashlib import sha256
 import hmac
 import struct
+import unicodedata
 from enum import IntEnum, unique
 from typing import List, Optional
 from functools import reduce
 
 from util import *
+from bip39.data import *
 
 
 @unique
@@ -58,17 +61,17 @@ def link(s, pw, prf):
     return s[0]
 
 
-def mnemonics_to_seed(seed: str, passphrase: Optional[str] = None):
+def mnemonics_to_seed(mnemonics: str, passphrase: Optional[str] = None) -> bytes:
     if passphrase is None:
         passphrase = b""
     salt = b"mnemonic" + tobytes(passphrase)
 
-    res = PBKDF2(password=seed, salt=salt, dkLen=64,
+    res = PBKDF2(password=mnemonics, salt=salt, dkLen=64,
                  prf=prf, count=SEED_PBKDF2_ROUNDS)
     return res
 
 
-def PBKDF2(password, salt, dkLen=16, count=1000, prf=None):
+def PBKDF2(password, salt, dkLen=16, count=1000, prf=None) -> bytes:
     password = tobytes(password)
     salt = tobytes(salt)
 
@@ -83,5 +86,40 @@ def PBKDF2(password, salt, dkLen=16, count=1000, prf=None):
 
 
 def validate_checksum(seed: List[str], n_words: Bip39WordsNum) -> bool:
-    return False
+    # __MnemonicToBinaryStr
+    mnemonic_bin_str = map(lambda word: int_to_binary_str(get_word_idx(word), WORD_BIT_LEN),
+                           seed)
+    mnemonic_bin_str: str = ''.join(mnemonic_bin_str)
 
+    checksum_len: int = Bip39WordsNum(n_words).get_checksum_len()
+    checksum_bin_str = mnemonic_bin_str[-checksum_len:]
+    # checksum_bin_str_got = self.__ComputeChecksumBinaryStr(mnemonic_bin_str)
+    # __ComputeChecksumBinaryStr
+    #       __EntropyBytesFromBinaryStr
+    entropy_bin_str = mnemonic_bin_str[:-checksum_len]
+    entropy_bytes = BytesUtils.from_binary_str(
+        entropy_bin_str, checksum_len * 8)
+    #          return
+    dig = sha256()
+    dig.update(entropy_bytes)
+    digest = dig.digest()
+    digest_size = dig.digest_size
+    entropy_hash_bin_str = BytesUtils.to_binary_str(digest, digest_size * 8)
+    #   return
+
+    checksum_bin_str_computed = entropy_hash_bin_str[:checksum_len]
+
+    return checksum_bin_str == checksum_bin_str_computed
+
+
+def normalize_NKFD(data_str: str) -> str:
+    """
+    Normalize string using NFKD.
+
+    Args:
+        data_str (str): Input string
+
+    Returns:
+        str: Normalized string
+    """
+    return unicodedata.normalize("NFKD", data_str)

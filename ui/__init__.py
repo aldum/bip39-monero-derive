@@ -25,6 +25,7 @@ Convert your English BIP39 mnemonic into a 25-word Monero mnemonic according to 
     "bip39_length": "How many words are in your BIP39 mnemonic?",
     "bip39_word_invalid": "Invalid word. Try again. ",
     "bip39_invalid": "Invalid mnemonic. Try again. ",
+    "bip39_valid": "Mnemonic OK. ",
     "bip39_mnem": "Your BIP39 mnemonic: ",
     "bip39_passphrase?": "Do you use a passphrase?",
     "bip39_input_passphrase": "Passphrase: ",
@@ -165,21 +166,31 @@ def program(screen: Screen):
     screen.addstr(prompts["init"])
     wait(screen)
     biplen = picker(screen, "bip39_length")
+    # biplen = 12
 
     screen.clear()
     mnem_valid = False
 
     DEBUG = False
-    if DEBUG:
-        bip39_phrase: str = ' '.join(["bacon"] * biplen)
-    else:
-        while not mnem_valid:
+    # DEBUG = True
+    while not mnem_valid:
+        if DEBUG:
+            # bip39_phrase: str = ' '.join(["bacon"] * biplen)
+            # words: List[str] = \
+            #     'coach someone found provide arch ritual outside spike unit enter margin warm' \
+            #     .split(' ')
+            words: List[str] = ["bacon"] * biplen
+        else:
             words = read_words(screen, biplen)
-            mnem_valid = validate_checksum(words, biplen)
-            if not mnem_valid:
-                write_err(screen, prompts["bip39_invalid"])
-                screen.addstr("\n")
-        bip39_phrase = ' '.join(words)
+        mnem_valid = True
+        mnem_valid = validate_checksum(words, biplen)
+        if not mnem_valid:
+            write_err(screen, prompts["bip39_invalid"])
+            screen.addstr("\n")
+        else:
+            write_ok(screen, prompts["bip39_valid"])
+        wait(screen)
+    bip39_phrase = ' '.join(words)
 
     bippass: bool = yesno_to_bool(picker(screen, "bip39_passphrase?"))
     passphrase = None
