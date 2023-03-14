@@ -52,6 +52,15 @@ def wait_msg(screen: Screen, prompt: str):
     screen.getch()
 
 
+def wait_enter(screen: Screen, prompt: str):
+    screen.addstr("\n\n" + prompts[prompt])
+    word_entered = False
+    while not word_entered:
+        c = screen.getch()
+        if is_enter(c):
+            word_entered = True
+
+
 def wait(screen: Screen):
     wait_msg(screen, "anykey")
 
@@ -177,11 +186,14 @@ def program(screen: Screen):
     if bippass:
         passphrase = read_passphrase(screen)
     screen.clear()
-    c = mnemonics_to_seed(bip39phrase, passphrase)
-    # screen.addstr("\n")
-    screen.addstr(prompts["bip39_mnem"])
-    screen.addstr(bip39phrase)
+    # c =
+    mnemonics_to_seed(bip39_phrase, passphrase)
     screen.addstr("\n")
-    screen.addstr(hexlify(c))
+    screen.addstr(prompts["bip39_mnem"])
+    screen.addstr("\n")
+    screen.addstr("\n")
+    screen.addstr(bip39_phrase)
+    screen.addstr("\n")
+    # screen.addstr(hexlify(c))
 
-    wait_msg(screen, "end")
+    wait_enter(screen, "end")
