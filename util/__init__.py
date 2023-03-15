@@ -18,31 +18,65 @@ def to_bytes(s, encoding="latin-1"):
 class IntegerUtils:
     """Class container for integer utility functions."""
 
-    # @staticmethod
-    # def ToBytes(data_int: int,
-    #             bytes_num: Optional[int] = None,
-    #             endianness: Literal["little", "big"] = "big",
-    #             signed: bool = False) -> bytes:
-    #     """
-    #     Convert integer to bytes.
+    @staticmethod
+    def encode(data: Union[bytes, str],
+               encoding: str = "utf-8") -> bytes:
+        """
+        Encode to bytes.
 
-    #     Args:
-    #         data_int (int)                          : Data integer
-    #         bytes_num (int, optional)               : Number of bytes, automatic if None
-    #         endianness ("big" or "little", optional): Endianness (default: big)
-    #         signed (bool, optional, default: false) : True if signed, false otherwise
+        Args:
+            data (str or bytes): Data
+            encoding (str)     : Encoding type
 
-    #     Returns:
-    #         bytes: Bytes representation
-    #     """
+        Returns:
+            bytes: String encoded to bytes
 
-    #     # In case gmpy is used
-    #     if data_int.__class__.__name__ == "mpz":
-    #         data_int = int(data_int)
+        Raises:
+            TypeError: If the data is neither string nor bytes
+        """
+        if isinstance(data, str):
+            return data.encode(encoding)
+        if isinstance(data, bytes):
+            return data
 
-    #     bytes_num = bytes_num or (
-    #         (data_int.bit_length() if data_int > 0 else 1) + 7) // 8
-    #     return data_int.to_bytes(bytes_num, byteorder=endianness, signed=signed)
+    @staticmethod
+    def to_bytes(data_int: int,
+                 bytes_num: Optional[int] = None,
+                 endianness: Literal["little", "big"] = "big",
+                 signed: bool = False) -> bytes:
+        """
+        Convert integer to bytes.
+
+        Args:
+            data_int (int)                          : Data integer
+            bytes_num (int, optional)               : Number of bytes, automatic if None
+            endianness ("big" or "little", optional): Endianness (default: big)
+            signed (bool, optional, default: false) : True if signed, false otherwise
+
+        Returns:
+            bytes: Bytes representation
+        """
+
+        # In case gmpy is used
+        if data_int.__class__.__name__ == "mpz":
+            data_int = int(data_int)
+
+        bytes_num = bytes_num or (
+            (data_int.bit_length() if data_int > 0 else 1) + 7) // 8
+        return data_int.to_bytes(bytes_num, byteorder=endianness, signed=signed)
+
+    @staticmethod
+    def from_binary_str(data: Union[bytes, str]) -> int:
+        """
+        Convert the specified binary string to integer.
+
+        Args:
+            data (str or bytes): Data
+
+        Returns:
+            int: Integer representation
+        """
+        return int(IntegerUtils.encode(data), 2)
 
     @staticmethod
     def to_binary_str(data_int: int,

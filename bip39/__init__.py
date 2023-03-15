@@ -43,8 +43,6 @@ class Bip39WordsNum(IntEnum):
         return ms_to_cs[self]
 
 
-# Total number of words
-WORDS_LIST_NUM: int = 2048
 # Word length in bit
 WORD_BIT_LEN: int = 11
 
@@ -64,7 +62,7 @@ def link(s, pw, prf):
 def mnemonics_to_seed(mnemonics: str, passphrase: Optional[str] = None) -> bytes:
     if passphrase is None:
         passphrase = b""
-    salt = b"mnemonic" + tobytes(passphrase)
+    salt = b"mnemonic" + to_bytes(passphrase)
 
     res = PBKDF2(password=mnemonics, salt=salt, dkLen=64,
                  prf=prf, count=SEED_PBKDF2_ROUNDS)
@@ -72,8 +70,8 @@ def mnemonics_to_seed(mnemonics: str, passphrase: Optional[str] = None) -> bytes
 
 
 def PBKDF2(password, salt, dkLen=16, count=1000, prf=None) -> bytes:
-    password = tobytes(password)
-    salt = tobytes(salt)
+    password = to_bytes(password)
+    salt = to_bytes(salt)
 
     key = b''
     i = 1

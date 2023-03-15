@@ -1,5 +1,8 @@
 from typing import Optional
 
+# Total number of words
+WORDS_LIST_NUM: int = 2048
+
 # pylint: disable=C0302
 wordlist = [
   "abandon",

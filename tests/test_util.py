@@ -2,7 +2,7 @@ import unittest
 
 import Crypto.Util.strxor as ref
 
-from util import (strxor, tobytes)  # disable=E0611
+from util import (strxor, to_bytes)  # disable=E0611
 
 
 class TestUtils(unittest.TestCase):
