@@ -1,7 +1,7 @@
 """UI"""
 import curses
-from binascii import hexlify
 from typing import List
+from binascii import hexlify
 
 from pick import pick
 
@@ -15,6 +15,9 @@ from bip39.data import (
     wordlist_contains,
     MAX_WORDLEN,
 )
+from monero import encode_int
+from slip0010 import derive_monero_master_key
+
 
 Screen = 'curses._CursesWindow'
 
@@ -29,6 +32,8 @@ Convert your English BIP39 mnemonic into a 25-word Monero mnemonic according to 
     "bip39_mnem": "Your BIP39 mnemonic: ",
     "bip39_passphrase?": "Do you use a passphrase?",
     "bip39_input_passphrase": "Passphrase: ",
+
+    "monero_mnem": "The derived Monero mnemonic: ",
 
 
     "end": "If you are done, press enter to quit. All data will be erased.",
@@ -49,7 +54,7 @@ def is_enter(c: int) -> bool:
 
 
 def wait_msg(screen: Screen, prompt: str):
-    screen.addstr("\n\n" + prompts[prompt])
+    screen.addstr("\n\n" + prompts[prompt] + "\n")
     screen.getch()
 
 
@@ -163,23 +168,25 @@ def program(screen: Screen):
     # UI start
     screen.clear()
 
+    DEBUG = False
+    # DEBUG = True
     screen.addstr(prompts["init"])
     wait(screen)
-    biplen = picker(screen, "bip39_length")
-    # biplen = 12
+    if DEBUG:
+        biplen = 12
+    else:
+        biplen = picker(screen, "bip39_length")
 
     screen.clear()
     mnem_valid = False
 
-    DEBUG = False
-    # DEBUG = True
     while not mnem_valid:
         if DEBUG:
             # bip39_phrase: str = ' '.join(["bacon"] * biplen)
-            # words: List[str] = \
-            #     'coach someone found provide arch ritual outside spike unit enter margin warm' \
-            #     .split(' ')
-            words: List[str] = ["bacon"] * biplen
+            # words: List[str] = ["bacon"] * biplen
+            words: List[str] = \
+                'coach someone found provide arch ritual outside spike unit enter margin warm' \
+                .split(' ')
         else:
             words = read_words(screen, biplen)
         mnem_valid = True
@@ -192,19 +199,30 @@ def program(screen: Screen):
         wait(screen)
     bip39_phrase = ' '.join(words)
 
-    bippass: bool = yesno_to_bool(picker(screen, "bip39_passphrase?"))
+    bippass: bool = False
     passphrase = None
-    if bippass:
-        passphrase = read_passphrase(screen)
+    if not DEBUG:
+        yesno_to_bool(picker(screen, "bip39_passphrase?"))
+        if bippass:
+            passphrase = read_passphrase(screen)
+
     screen.clear()
-    # c =
-    mnemonics_to_seed(bip39_phrase, passphrase)
     screen.addstr("\n")
     screen.addstr(prompts["bip39_mnem"])
     screen.addstr("\n")
     screen.addstr("\n")
     screen.addstr(bip39_phrase)
     screen.addstr("\n")
-    # screen.addstr(hexlify(c))
+    seed: bytes = mnemonics_to_seed(bip39_phrase, passphrase)
+    (monero_key, _chain_code) = derive_monero_master_key(seed)
+    screen.addstr("\n")
+    screen.addstr(prompts["monero_mnem"])
+    screen.addstr("\n\n")
+    mnem_words: List[str] = encode_int(monero_key)
+    SPLIT = 6
+    for i in range(len(mnem_words) // SPLIT):
+        chunk = mnem_words[i * SPLIT:(i * SPLIT) + SPLIT]
+        screen.addstr(' '.join(chunk))
+        screen.addstr("\n")
 
     wait_enter(screen, "end")
