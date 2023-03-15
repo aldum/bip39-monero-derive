@@ -9,7 +9,6 @@ packages = [{include = "bip39_monero_derive"}]
 
 [tool.poetry.dependencies]
 python = ">=3.9,<3.12"
-python-secp256k1 = "^0.2.0"
 pick = "^2.2.0"
 
 [tool.poetry.group.dev.dependencies]
