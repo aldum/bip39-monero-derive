@@ -87,7 +87,9 @@ def PBKDF2(password, salt, dkLen=16, count=1000, prf=None) -> bytes:
 
 def validate_checksum(seed: List[str], n_words: Bip39WordsNum) -> bool:
     # __MnemonicToBinaryStr
-    mnemonic_bin_str = map(lambda word: int_to_binary_str(get_word_idx(word), WORD_BIT_LEN),
+    mnemonic_bin_str = map(lambda word:
+                           IntegerUtils.to_binary_str(
+                               get_word_idx(word), WORD_BIT_LEN),
                            seed)
     mnemonic_bin_str: str = ''.join(mnemonic_bin_str)
 

@@ -1,34 +1,63 @@
 """Utility functions"""
-from typing import Union, Literal
+from typing import Union, Literal, Optional
 from binascii import unhexlify
 
 
-def tobytes(s, encoding="latin-1"):
+def to_bytes(s, encoding="latin-1"):
     if isinstance(s, bytes):
         return s
-    elif isinstance(s, bytearray):
+    if isinstance(s, bytearray):
         return bytes(s)
-    elif isinstance(s, str):
+    if isinstance(s, str):
         return s.encode(encoding)
-    elif isinstance(s, memoryview):
+    if isinstance(s, memoryview):
         return s.tobytes()
-    else:
-        return bytes([s])
+    return bytes([s])
 
 
-def int_to_binary_str(data_int: int,
+class IntegerUtils:
+    """Class container for integer utility functions."""
+
+    # @staticmethod
+    # def ToBytes(data_int: int,
+    #             bytes_num: Optional[int] = None,
+    #             endianness: Literal["little", "big"] = "big",
+    #             signed: bool = False) -> bytes:
+    #     """
+    #     Convert integer to bytes.
+
+    #     Args:
+    #         data_int (int)                          : Data integer
+    #         bytes_num (int, optional)               : Number of bytes, automatic if None
+    #         endianness ("big" or "little", optional): Endianness (default: big)
+    #         signed (bool, optional, default: false) : True if signed, false otherwise
+
+    #     Returns:
+    #         bytes: Bytes representation
+    #     """
+
+    #     # In case gmpy is used
+    #     if data_int.__class__.__name__ == "mpz":
+    #         data_int = int(data_int)
+
+    #     bytes_num = bytes_num or (
+    #         (data_int.bit_length() if data_int > 0 else 1) + 7) // 8
+    #     return data_int.to_bytes(bytes_num, byteorder=endianness, signed=signed)
+
+    @staticmethod
+    def to_binary_str(data_int: int,
                       zero_pad_bit_len: int = 0) -> str:
-    """
-        Convert the specified integer to a binary string.
-
-        Args:
-            data_int (int)                  : Data integer
-            zero_pad_bit_len (int, optional): Zero pad length in bits, 0 if not specified
-
-        Returns:
-            str: Binary string
         """
-    return bin(data_int)[2:].zfill(zero_pad_bit_len)
+            Convert the specified integer to a binary string.
+
+            Args:
+                data_int (int)                  : Data integer
+                zero_pad_bit_len (int, optional): Zero pad length in bits, 0 if not specified
+
+            Returns:
+                str: Binary string
+            """
+        return bin(data_int)[2:].zfill(zero_pad_bit_len)
 
 
 class BytesUtils:
@@ -47,7 +76,7 @@ class BytesUtils:
         Returns:
             str: Binary string
         """
-        return int_to_binary_str(BytesUtils.to_integer(data_bytes), zero_pad_bit_len)
+        return IntegerUtils.to_binary_str(BytesUtils.to_integer(data_bytes), zero_pad_bit_len)
 
     @staticmethod
     def to_integer(data_bytes: bytes,
