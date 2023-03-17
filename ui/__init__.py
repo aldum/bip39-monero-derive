@@ -6,6 +6,7 @@ from binascii import hexlify
 
 from pick import pick
 
+from ui.input import Input, Screen
 from bip39 import (
     Bip39WordsNum,
     mnemonics_to_seed,
@@ -19,8 +20,6 @@ from bip39.data import (
 from monero import encode_int
 from slip0010 import derive_monero_master_key
 
-
-Screen = 'curses._CursesWindow'
 
 _initPrompt = """BIP39-Monero Mnemonic Converter v0.1
 Convert your English BIP39 mnemonic into a 25-word Monero mnemonic according to SLIP10. """
@@ -54,10 +53,6 @@ def validate(c: str) -> bool:
     return len(c) == 1 and c.isalpha()
 
 
-def is_enter(c: int) -> bool:
-    return c in [curses.KEY_ENTER, 10, 13]
-
-
 def wait_msg(screen: Screen, prompt: Optional[str] = None):
     if prompt is not None:
         screen.addstr("\n\n" + prompts[prompt] + "\n")
@@ -68,8 +63,8 @@ def wait_enter(screen: Screen, prompt: str):
     screen.addstr("\n\n" + prompts[prompt])
     word_entered = False
     while not word_entered:
-        c = screen.getch()
-        if is_enter(c):
+        key = Input.read_input(screen)
+        if key.is_enter() or key.is_Esc():
             word_entered = True
 
 
@@ -101,28 +96,41 @@ def read_passphrase(screen: Screen) -> str:
 
 def read_word(screen: Screen, prompt: str, maxlen: int = 16,
               passw: bool = False, validate=lambda _: True) -> str:
-    l = 0
+    (y, _) = screen.getyx()
     word = []
-    c = ""
+    disp_word = []
+
+    def add_char(ch: str) -> None:
+        if passw:
+            disp_word.append('*')
+        else:
+            disp_word.append(ch)
+        word.append(ch)
+
     word_entered = False
-    screen.addstr(prompt)
-    while not word_entered or l >= maxlen:
-        c = screen.getch()
-        char = chr(c)
-        if is_enter(c):
+    while not word_entered:
+        screen.addstr(y, 0, prompt)
+        screen.addstr(''.join(disp_word))
+        screen.clrtoeol()
+        key = Input.read_input(screen)
+        if key.is_Esc():
+            raise KeyboardInterrupt
+        if key.isalpha:
+            if validate(key.char):
+                char = key.char.lower()
+                add_char(char)
+        if key.is_enter() or len(word) > maxlen:
             word_entered = True
-        elif c in (curses.KEY_BACKSPACE, '\x7f'):
-            # TODO backspace
-            pass
-        elif validate(char):
-            if passw:
-                disp = '*'
+        if key.is_space():
+            if not passw:
+                word_entered = True
             else:
-                char = char.lower()
-                disp = char
-            screen.addch(disp)
-            word.append(char)
-            l = l + 1
+                add_char(' ')
+        if key.is_bksp():
+            word = word[:-1]
+            disp_word = disp_word[:-1]
+            screen.addstr(''.join(disp_word))
+
     return ''.join(word)
 
 
@@ -160,7 +168,8 @@ def read_words(screen: Screen, biplen: int) -> List[str]:
             word_valid = wordlist_contains(word)
             if not word_valid:
                 screen.addstr(' ')
-                write_err(screen, prompts["bip39_word_invalid"])
+                write_err(
+                    screen, f"""{prompts["bip39_word_invalid"]} ({word})""")
             # else:
             #     write_ok(screen, "OK. ")
             advance_line(screen)
@@ -206,10 +215,9 @@ def program(screen: Screen):
 
     bippass: bool = False
     passphrase = None
-    if not DEBUG:
-        yesno_to_bool(picker(screen, "bip39_passphrase?"))
-        if bippass:
-            passphrase = read_passphrase(screen)
+    bippass = yesno_to_bool(picker(screen, "bip39_passphrase?"))
+    if bippass:
+        passphrase = read_passphrase(screen)
 
     screen.clear()
     screen.addstr("\n")
