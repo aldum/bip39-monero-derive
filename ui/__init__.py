@@ -157,15 +157,14 @@ def read_words(screen: Screen, biplen: int) -> List[str]:
             word = read_word(
                 screen, f"Enter word #{n}/{biplen}: ", MAX_WORDLEN)
             word_valid = wordlist_contains(word)
-            screen.addstr('\n')
-            if word_valid:
-                write_ok(screen, "OK. ")
-            else:
+            if not word_valid:
+                screen.addstr(' ')
                 write_err(screen, prompts["bip39_word_invalid"])
+            # else:
+            #     write_ok(screen, "OK. ")
             advance_line(screen)
 
         words.append(''.join(word))
-        print()
 
     return words
 
