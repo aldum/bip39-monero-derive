@@ -10,7 +10,7 @@ from typing import List, Optional
 from functools import reduce
 
 from util import *
-from bip39.data import *
+from bip39.data import wordlist
 
 
 @unique
@@ -87,7 +87,7 @@ def validate_checksum(seed: List[str], n_words: Bip39WordsNum) -> bool:
     # __MnemonicToBinaryStr
     mnemonic_bin_str = map(lambda word:
                            IntegerUtils.to_binary_str(
-                               get_word_idx(word), WORD_BIT_LEN),
+                               wordlist.get_word_idx(word), WORD_BIT_LEN),
                            seed)
     mnemonic_bin_str: str = ''.join(mnemonic_bin_str)
 

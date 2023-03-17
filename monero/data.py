@@ -1,16 +1,8 @@
-from typing import Optional
+from util.wordlist import Wordlist
 
 
-# class MoneroWordlist(Wordlist):
-class MoneroWordlist():
-    # Total number of words
-    WORDS_LIST_NUM: int = 1626
+class MoneroWordlist(Wordlist):
     unique_prefix_length = 3
-    m_words_to_idx = {}
-
-    def __init__(self):
-        self.m_words_to_idx = {
-            self.wordlist[i]: i for i in range(len(self.wordlist))}
 
     # pylint: disable=C0302
     wordlist = [
@@ -1641,18 +1633,6 @@ class MoneroWordlist():
         "zones",
         "zoom"
     ]
-
-    def __getitem__(self, key):
-        return self.wordlist[key]
-
-    def get_word_idx(self, word: str) -> Optional[int]:
-        try:
-            return self.m_words_to_idx[word]
-        except KeyError:
-            return None
-
-    def wordlist_contains(self, word: str) -> bool:
-        return self.get_word_idx(word) is not None
 
 
 wordlist = MoneroWordlist()

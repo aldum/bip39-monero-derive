@@ -12,11 +12,7 @@ from bip39 import (
     mnemonics_to_seed,
     validate_checksum,
 )
-from bip39.data import (
-    wordlist,
-    wordlist_contains,
-    MAX_WORDLEN,
-)
+from bip39.data import wordlist
 from monero import encode_int
 from slip0010 import derive_monero_master_key
 
@@ -164,9 +160,9 @@ def read_words(screen: Screen, biplen: int) -> List[str]:
     for n in range(1, biplen + 1):
         word_valid: bool = False
         while not word_valid:
-            word_valid = wordlist_contains(word)
             word: str = read_word(
-                screen, prompts["bip39_word"](n, biplen), wl.MAX_WORDLEN)
+                screen, prompts["bip39_word"](n, biplen), wordlist.MAX_WORDLEN)
+            word_valid = wordlist.contains(word)
             if not word_valid:
                 screen.addstr(' ')
                 write_err(screen, prompts["bip39_word_invalid"](word))
