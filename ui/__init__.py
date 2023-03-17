@@ -40,6 +40,7 @@ prompts = {
     "monero_mnem": "Your derived Monero mnemonic: ",
 
 
+    "nuke": "Esc pressed, exiting.",
     "end": "If you are done, press enter to quit. All data will be erased.",
 }
 
@@ -230,3 +231,7 @@ def program(screen: Screen):
         screen.addstr("\n")
 
     wait_enter(screen, "end")
+
+
+def bye():
+    print(prompts["nuke"])
