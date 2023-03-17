@@ -1,17 +1,16 @@
 """Interactive application for deriving a Monero mnemonic from a BIP 39 seedphrase."""
-import signal
 from curses import wrapper
 import ui
+from util import catch_sigint
 
 
 def __main__():
-    def handler(_sig, _handler):
-        print("Ctrl+C pressed.")
+    catch_sigint()
 
-    # Set the signal handler
-    signal.signal(signal.SIGINT, handler)
-
-    wrapper(ui.program)
+    try:
+        wrapper(ui.program)
+    except KeyboardInterrupt:
+        print("Bye.")
 
 
 __main__()

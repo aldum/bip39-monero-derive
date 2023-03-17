@@ -1,6 +1,8 @@
 """Utility functions"""
 from typing import Union, Literal, Optional
 from binascii import unhexlify
+import signal
+import os
 
 
 def to_bytes(s, encoding="latin-1"):
@@ -175,3 +177,16 @@ def strxor(s1: bytes, s2: bytes) -> bytes:
     for i in range(0, l):
         ret[i] = s1[i] ^ s2[i]
     return ret
+
+
+def handler(sig, _handler):
+    if sig == signal.SIGINT:
+        print("Ctrl+C pressed.")
+
+
+def catch_sigint():
+    signal.signal(signal.SIGINT, handler)
+
+
+def lower_escdelay():
+    os.environ.setdefault('ESCDELAY', '25')
