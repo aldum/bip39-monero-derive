@@ -1,6 +1,7 @@
 """UI"""
 import curses
-from typing import List
+from curses import ascii as asc
+from typing import List, Optional
 from binascii import hexlify
 
 from pick import pick
@@ -56,8 +57,9 @@ def is_enter(c: int) -> bool:
     return c in [curses.KEY_ENTER, 10, 13]
 
 
-def wait_msg(screen: Screen, prompt: str):
-    screen.addstr("\n\n" + prompts[prompt] + "\n")
+def wait_msg(screen: Screen, prompt: Optional[str] = None):
+    if prompt is not None:
+        screen.addstr("\n\n" + prompts[prompt] + "\n")
     screen.getch()
 
 
@@ -79,7 +81,7 @@ def picker(screen: Screen, key: str):
 
 
 def _picker(screen: Screen, opts: List[str], prompt: str):
-    # selected, ind = pick(options[key], prompts[key], indicator="=>", screen=screen)
+    # selected, ind = pick(options[key], prompts[key], "=>", screen)
     selected, _ = pick(opts, prompt, indicator="=>", screen=screen)
     return selected
 
