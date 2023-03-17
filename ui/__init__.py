@@ -28,8 +28,9 @@ prompts = {
     "init": _initPrompt,
     "anykey": "Press any key to contine.",
     # "bip39_length": "How many words are in your BIP39 mnemonic?",
-    "bip39_length": f"""{_initPrompt}\nHow many words are in your BIP39 mnemonic?""",
-    "bip39_word_invalid": "Invalid word. Try again. ",
+    "bip39_length": f"""{_initPrompt}\n\nHow many words are in your BIP39 mnemonic?""",
+    "bip39_word": lambda n, s: f"Enter word #{n:02}/{s}: ",
+    "bip39_word_invalid": lambda w = '': f"Invalid word. Try again. ({w})",
     "bip39_invalid": "Invalid mnemonic. Try again. ",
     "bip39_valid": "Mnemonic OK. ",
     "bip39_mnem": "Your BIP39 mnemonic: ",
@@ -163,13 +164,12 @@ def read_words(screen: Screen, biplen: int) -> List[str]:
     for n in range(1, biplen + 1):
         word_valid: bool = False
         while not word_valid:
-            word = read_word(
-                screen, f"Enter word #{n}/{biplen}: ", MAX_WORDLEN)
             word_valid = wordlist_contains(word)
+            word: str = read_word(
+                screen, prompts["bip39_word"](n, biplen), wl.MAX_WORDLEN)
             if not word_valid:
                 screen.addstr(' ')
-                write_err(
-                    screen, f"""{prompts["bip39_word_invalid"]} ({word})""")
+                write_err(screen, prompts["bip39_word_invalid"](word))
             # else:
             #     write_ok(screen, "OK. ")
             advance_line(screen)
