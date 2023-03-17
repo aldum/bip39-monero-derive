@@ -21,11 +21,14 @@ from slip0010 import derive_monero_master_key
 
 Screen = 'curses._CursesWindow'
 
+_initPrompt = """BIP39-Monero Mnemonic Converter v0.1
+Convert your English BIP39 mnemonic into a 25-word Monero mnemonic according to SLIP10. """
+
 prompts = {
-    "init": """BIP39-Monero Mnemonic Converter v0.1
-Convert your English BIP39 mnemonic into a 25-word Monero mnemonic according to SLIP10. """,
+    "init": _initPrompt,
     "anykey": "Press any key to contine.",
-    "bip39_length": "How many words are in your BIP39 mnemonic?",
+    # "bip39_length": "How many words are in your BIP39 mnemonic?",
+    "bip39_length": f"""{_initPrompt}\nHow many words are in your BIP39 mnemonic?""",
     "bip39_word_invalid": "Invalid word. Try again. ",
     "bip39_invalid": "Invalid mnemonic. Try again. ",
     "bip39_valid": "Mnemonic OK. ",
@@ -33,7 +36,7 @@ Convert your English BIP39 mnemonic into a 25-word Monero mnemonic according to 
     "bip39_passphrase?": "Do you use a passphrase?",
     "bip39_input_passphrase": "Passphrase: ",
 
-    "monero_mnem": "The derived Monero mnemonic: ",
+    "monero_mnem": "Your derived Monero mnemonic: ",
 
 
     "end": "If you are done, press enter to quit. All data will be erased.",
@@ -72,9 +75,12 @@ def wait(screen: Screen):
 
 
 def picker(screen: Screen, key: str):
+    return _picker(screen, options[key], prompts[key])
+
+
+def _picker(screen: Screen, opts: List[str], prompt: str):
     # selected, ind = pick(options[key], prompts[key], indicator="=>", screen=screen)
-    selected, _ = pick(options[key], prompts[key],
-                       indicator="=>", screen=screen)
+    selected, _ = pick(opts, prompt, indicator="=>", screen=screen)
     return selected
 
 
@@ -165,13 +171,10 @@ def read_words(screen: Screen, biplen: int) -> List[str]:
 def program(screen: Screen):
     curses.init_pair(1, curses.COLOR_GREEN, curses.COLOR_BLACK)
     curses.init_pair(2, curses.COLOR_RED, curses.COLOR_BLACK)
-    # UI start
     screen.clear()
 
-    DEBUG = False
+    DEBUG: bool = False
     # DEBUG = True
-    screen.addstr(prompts["init"])
-    wait(screen)
     if DEBUG:
         biplen = 12
     else:
@@ -196,7 +199,7 @@ def program(screen: Screen):
             screen.addstr("\n")
         else:
             write_ok(screen, prompts["bip39_valid"])
-        wait(screen)
+
     bip39_phrase = ' '.join(words)
 
     bippass: bool = False
