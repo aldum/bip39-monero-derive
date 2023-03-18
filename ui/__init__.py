@@ -4,9 +4,8 @@ from curses import ascii as asc
 from typing import List, Optional
 from binascii import hexlify
 
-from pick import pick
-
 from ui.input import Input, Screen
+from ui.pick import pick
 from bip39 import (
     Bip39WordsNum,
     mnemonics_to_seed,
