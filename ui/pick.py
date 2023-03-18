@@ -1,3 +1,4 @@
+# https://github.com/wong2/pick
 import curses
 from dataclasses import dataclass, field
 from typing import Any, List, Optional, Sequence, Tuple, TypeVar, Union, Generic
@@ -34,6 +35,7 @@ class Picker(Generic[OPTION_T]):
     selected_indexes: List[int] = field(init=False, default_factory=list)
     index: int = field(init=False, default=0)
     screen: Optional["curses._CursesWindow"] = None
+    wraparound: bool = True
 
     def __post_init__(self) -> None:
         if len(self.options) == 0:
@@ -53,12 +55,18 @@ class Picker(Generic[OPTION_T]):
     def move_up(self) -> None:
         self.index -= 1
         if self.index < 0:
-            self.index = len(self.options) - 1
+            if self.wraparound:
+                self.index = len(self.options) - 1
+            else:
+                self.index = 0
 
     def move_down(self) -> None:
         self.index += 1
         if self.index >= len(self.options):
-            self.index = 0
+            if self.wraparound:
+                self.index = 0
+            else:
+                self.index = len(self.options) - 1
 
     def mark_index(self) -> None:
         if self.multiselect:
@@ -190,6 +198,7 @@ def pick(
     multiselect: bool = False,
     min_selection_count: int = 0,
     screen: Optional["curses._CursesWindow"] = None,
+    wraparaound: bool = True
 ):
     picker: Picker = Picker(
         options,
@@ -199,5 +208,6 @@ def pick(
         multiselect,
         min_selection_count,
         screen,
+        wraparaound,
     )
     return picker.start()
