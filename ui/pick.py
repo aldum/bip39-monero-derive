@@ -16,6 +16,7 @@ KEYS_ENTER = (curses.KEY_ENTER, ord("\n"), ord("\r"))
 KEYS_UP = (curses.KEY_UP, ord("k"))
 KEYS_DOWN = (curses.KEY_DOWN, ord("j"))
 KEYS_SELECT = (curses.KEY_RIGHT, ord(" "))
+KEYS_ESC = ["\x1b", curses.ascii.ESC]
 
 SYMBOL_CIRCLE_FILLED = "(x)"
 SYMBOL_CIRCLE_EMPTY = "( )"
@@ -154,6 +155,8 @@ class Picker(Generic[OPTION_T]):
                 self.move_up()
             elif c in KEYS_DOWN:
                 self.move_down()
+            elif c in KEYS_ESC:
+                return None
             elif c in KEYS_ENTER:
                 if (
                     self.multiselect

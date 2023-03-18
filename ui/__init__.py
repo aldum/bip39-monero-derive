@@ -74,8 +74,11 @@ def picker(screen: Screen, key: str):
 
 def _picker(screen: Screen, opts: List[str], prompt: str):
     # selected, ind = pick(options[key], prompts[key], "=>", screen)
-    selected, _ = pick(opts, prompt, indicator="=>",
-                       screen=screen, wraparaound=False)
+    ret = pick(opts, prompt, indicator="=>",
+               screen=screen, wraparaound=False)
+    if ret is None:
+        raise KeyboardInterrupt
+    selected, _ = ret
     return selected
 
 
