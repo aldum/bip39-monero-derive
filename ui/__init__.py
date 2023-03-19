@@ -8,12 +8,11 @@ from ui.input import Input, Screen
 from ui.pick import pick
 from bip39 import (
     Bip39WordsNum,
-    mnemonics_to_seed,
     validate_checksum,
 )
 from bip39.data import wordlist
 from monero_mnemonic import encode_int
-from slip0010 import derive_monero_master_key
+from slip0010.sd import SeedDerivation
 
 
 _initPrompt = """BIP39-Monero Mnemonic Converter v0.1
@@ -196,8 +195,9 @@ def program(screen: Screen):
             # bip39_phrase: str = ' '.join(["bacon"] * biplen)
             # words: List[str] = ["bacon"] * biplen
             words: List[str] = \
-                'coach someone found provide arch ritual outside spike unit enter margin warm' \
+                'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about' \
                 .split(' ')
+            # 'coach someone found provide arch ritual outside spike unit enter margin warm' \
         else:
             words = read_words(screen, biplen)
         mnem_valid = True
@@ -211,7 +211,7 @@ def program(screen: Screen):
     bip39_phrase = ' '.join(words)
 
     bippass: bool = False
-    passphrase = None
+    passphrase = ''
     bippass = yesno_to_bool(picker(screen, "bip39_passphrase?"))
     if bippass:
         passphrase = read_passphrase(screen)
@@ -223,12 +223,11 @@ def program(screen: Screen):
     screen.addstr("\n")
     screen.addstr(bip39_phrase)
     screen.addstr("\n")
-    seed: bytes = mnemonics_to_seed(bip39_phrase, passphrase)
-    (monero_key, _chain_code) = derive_monero_master_key(seed)
     screen.addstr("\n")
+    sd = SeedDerivation.derive_monero(bip39_phrase, passphrase)
     screen.addstr(prompts["monero_mnem"])
     screen.addstr("\n\n")
-    mnem_words: List[str] = encode_int(monero_key)
+    mnem_words: List[str] = sd.electrum_words.split(' ')
     SPLIT = 6
     for i in range(len(mnem_words) // SPLIT):
         chunk = mnem_words[i * SPLIT:(i * SPLIT) + SPLIT]

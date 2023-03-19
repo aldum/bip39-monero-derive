@@ -1,8 +1,8 @@
 from enum import IntEnum, unique
 from typing import List, Literal
-from binascii import crc32, unhexlify
+from binascii import crc32, hexlify, unhexlify
 
-from util import IntegerUtils, BytesUtils
+from util import IntegerUtils, BytesUtils, err_print
 from .data import wordlist
 
 n = wordlist.WORDS_LIST_NUM
@@ -47,6 +47,47 @@ def _is_valid_entropy_len(entropy_byte_len: bytes) -> bool:
     return entropy_byte_len * 8 in ENTROPY_BIT_LEN
 
 
+def mn_encode(message: bytes, checksum=False) -> List[str]:
+    def mn_swap_endian_4byte(st):
+        # this is from moneromoo's code
+        r = st[6:8] + st[4:6] + st[2:4] + st[0:2]
+        return r
+
+    def checksum_create(wlist, unique_prefix_len=wordlist.unique_prefix_length):
+        acc = ""
+        for w in wlist:
+            acc += w[:unique_prefix_len] if len(w) > unique_prefix_len else w
+
+        acc = acc.encode("utf8")
+        crc = crc32(acc) & 0xFFFFFFFF
+        return crc % len(wlist)
+
+    out = []
+    n = wordlist.WORDS_LIST_NUM
+    message = hexlify(message)
+    for i in range(0, len(message), 8):
+        message = (
+            message[0:i] +
+            mn_swap_endian_4byte(message[i: i + 8]) + message[i + 8:]
+        )
+
+    for i in range(len(message) // 8):
+        word = message[8 * i: 8 * i + 8]
+        x = int(word, 16)
+        w1 = x % n
+        w2 = ((x // n) + w1) % n
+        w3 = (((x // n) // n) + w2) % n
+        word1 = wordlist[w1]
+        word2 = wordlist[w2]
+        word3 = wordlist[w3]
+        out += [word1, word2, word3]
+
+    if checksum:
+        idx = checksum_create(out)
+        out.append(out[idx])
+    return out
+
+
 def encode(entropy_bytes: bytes) -> List[str]:
     """
     Encode bytes to list of mnemonic words.
@@ -68,9 +109,11 @@ def encode(entropy_bytes: bytes) -> List[str]:
 
     # Consider 4 bytes at a time, 4 bytes represent 3 words
     mnemonic = []
-    for i in range(len(entropy_bytes) // 4):
+    BL = 4
+    for i in range(len(entropy_bytes) // BL):
         mnemonic += byteschunk_to_words(
-            entropy_bytes[i * 4:(i * 4) + 4], "little")
+            entropy_bytes[i * BL:(i * BL) + BL], "little")
+        # entropy_bytes[i * BL:(i * BL) + BL], "big")
 
     return mnemonic
 

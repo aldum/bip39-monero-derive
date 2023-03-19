@@ -2,13 +2,12 @@
 # import unittest
 import unittest
 from unittest import TestCase
-from binascii import hexlify, unhexlify
+from binascii import hexlify
 
-from util import JSONUtils, err_print, IntegerUtils
-from bip39 import mnemonics_to_seed  # , mnem_to_binstr
-from slip0010 import derive_monero_master_key
-from monero_mnemonic import encode
-from monero_mnemonic import encode_int
+from util import JSONUtils, err_print
+from bip39 import mnemonics_to_ent  # , mnem_to_binstr
+from slip0010 import sd
+from monero_mnemonic import *
 
 
 class TestUtils(TestCase):
@@ -22,20 +21,19 @@ class TestUtils(TestCase):
 
     def test_integration(self):
         for l in self.test_data:
-            seed = unhexlify(l.entropy)
-            gen_seed = mnemonics_to_seed(l.bip39, l.passp)
+            ent = l.seed
+            ent = l.entropy
+            gen_ent = mnemonics_to_ent(l.bip39, l.passp)
             mnem = l.monero_mnem
-            assert seed == gen_seed
+            # err_print(f"b58 {hexlify(gen_ent)}")
+            assert ent == gen_ent
             if mnem is not None:
-                (monero_key, _) = derive_monero_master_key(gen_seed)
-                # err_print(f"key {hexlify(IntegerUtils.to_bytes(monero_key))}")
-                # err_print(f"il {hexlify(gen_seed)}")
-                # [I_L, _] = _derive_monero_master_key(gen_seed)
-                # assert int.from_bytes(I_L, "big") == int(hexlify(I_L), 16)
-                # mnem_words = encode(I_L)
-                # mnem_words = encode(monero_key)
-                mnem_words = encode_int(monero_key)
-                assert mnem_words == mnem.split(' ')
+                der = sd.SeedDerivation.derive_monero(l.bip39, l.passp)
+                assert der.master_seed == gen_ent
+                asdf = der.monero_master
+                err_print(f"mm {hexlify(asdf)}")
+                mnem_words = der.electrum_words
+                assert mnem_words.split(' ') == mnem.split(' ')
         # assert 1 == 2
 
 

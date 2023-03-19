@@ -10,6 +10,7 @@ packages = [{include = "bip39_monero_derive"}]
 [tool.poetry.dependencies]
 python = ">=3.9,<3.12"
 pick = "^2.2.0"
+ecdsa = "^0.18.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.1.0"

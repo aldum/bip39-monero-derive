@@ -2,9 +2,12 @@
 import os
 import json
 import signal
+import hashlib
 from sys import stderr
 from typing import Union, List, Literal, Optional
+from hashlib import sha256
 from binascii import unhexlify
+from functools import wraps
 from dataclasses import dataclass
 
 
@@ -205,7 +208,7 @@ class TestVector:
     seed: bytes
     bip39: str
     passp: str
-    entropy: str
+    entropy: bytes
     monero_mnem: Optional[str]
     public_addr: Optional[str]
 
@@ -229,10 +232,32 @@ class JSONUtils:
                 [seed, bip39, passp, ent, monero_mnem, public_addr] = line
             elif len(line) == 4:
                 [seed, bip39, passp, ent] = line
-            return TestVector(seed, bip39, passp, ent, monero_mnem, public_addr)
+            base_hex = unhexlify(seed)
+            ent_b = unhexlify(ent)
+            return TestVector(base_hex, bip39, passp, ent_b, monero_mnem, public_addr)
         return [to_vect(line) for line in data]
 
     @staticmethod
     def load_vectors_from_file(filename: str) -> List[TestVector]:
         data = JSONUtils.load_json_file(filename)
         return JSONUtils.load_vectors_data(data)
+
+
+def memoize(f):
+    """Memoization decorator for a function taking one or more arguments."""
+
+    def _c(*args, **kwargs):
+        if not hasattr(f, "cache"):
+            f.cache = {}
+        key = (args, tuple(kwargs))
+        if key not in f.cache:
+            f.cache[key] = f(*args, **kwargs)
+        return f.cache[key]
+
+    return wraps(f)(_c)
+
+
+def hash160(data):
+    """Return ripemd160(sha256(data))"""
+    rh = hashlib.new("ripemd160", sha256(data).digest())
+    return rh.digest()

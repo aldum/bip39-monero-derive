@@ -59,7 +59,25 @@ def link(s, pw, prf):
     return s[0]
 
 
-def mnemonics_to_seed(mnemonics: str, passphrase: Optional[str] = None) -> bytes:
+# def mnemonics_to_seed(mnemonics: str, passphrase: Optional[str] = None) -> bytes:
+#     words = mnemonics.split(' ')
+#     mnemonic_bin_str = map(lambda word:
+#                            IntegerUtils.to_binary_str(
+#                                wordlist.get_word_idx(word), WORD_BIT_LEN),
+#                            words)
+#     return ''.join(mnemonic_bin_str)
+def mnemonics_to_seed(seed, passphrase=b""):
+    salt = b"mnemonic" + passphrase
+
+    def prf(p, s):
+        hx = hmac.new(p, msg=s, digestmod=hashlib.sha512)
+        return hx.digest()
+
+    res = PBKDF2(password=seed, salt=salt, dkLen=64, prf=prf, count=2048)
+    return res
+
+
+def mnemonics_to_ent(mnemonics: str, passphrase: Optional[str] = None) -> bytes:
     if passphrase is None:
         passphrase = b""
     salt = b"mnemonic" + to_bytes(passphrase)
