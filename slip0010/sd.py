@@ -55,7 +55,6 @@ class SeedDerivation(object):
         else:
             self.path = path
         wl = Wallet.from_master_secret(seed, use_ed25519=slip0010)
-        err_print(f"cc {wl.chain_code}")
 
         # Generate private keys based on the gen mechanism. Bip44 path + Monero backward compatible
         data = wl.get_child_for_path(self.path)

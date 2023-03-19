@@ -4,15 +4,14 @@ import unittest
 from unittest import TestCase
 from binascii import hexlify
 
-from util import JSONUtils, err_print
+from util import err_print
+from tests.util import JSONUtils
 from bip39 import mnemonics_to_ent  # , mnem_to_binstr
 from slip0010 import sd
-from monero_mnemonic import *
 
 
 class TestUtils(TestCase):
     test_data = []
-    # test_b = 'c9251180cf1053c02b4900dff7a3cd1d0821daeed048bc5c640e9b884d3137edc40e2c08919520214fb735d6762c971ea21b1dfd347f5a0be3ce1217bd133a7e'
 
     def __init__(self, test_name):
         super().__init__(test_name)
