@@ -18,6 +18,6 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: |
-          apt install python3-poetry automake
+          sudo apt install python3-poetry automake
           poetry install
           make dist_script
