@@ -1,11 +1,15 @@
 """Utility functions"""
-from typing import Union, Literal, Optional
-from binascii import unhexlify
-import signal
 import os
+import json
+import signal
+from sys import stderr
+from typing import Union, List, Literal, Optional
+from binascii import unhexlify
+from dataclasses import dataclass
 
 
-def to_bytes(s, encoding="latin-1"):
+def to_bytes(s: Union[bytes, bytearray, str, memoryview],
+             encoding="latin-1"):
     if isinstance(s, bytes):
         return s
     if isinstance(s, bytearray):
@@ -179,6 +183,10 @@ def strxor(s1: bytes, s2: bytes) -> bytes:
     return ret
 
 
+def err_print(s: str):
+    print(s, file=stderr)
+
+
 def handler(sig, _handler):
     if sig == signal.SIGINT:
         print("Ctrl+C pressed.")
@@ -190,3 +198,41 @@ def catch_sigint():
 
 def lower_escdelay():
     os.environ.setdefault('ESCDELAY', '25')
+
+
+@dataclass
+class TestVector:
+    seed: bytes
+    bip39: str
+    passp: str
+    entropy: str
+    monero_mnem: Optional[str]
+    public_addr: Optional[str]
+
+
+class JSONUtils:
+    @staticmethod
+    def load_json_file(filename: str) -> str:
+        f = open(filename, encoding='utf-8')
+
+        data = json.load(f)
+
+        f.close()
+        return data
+
+    @staticmethod
+    def load_vectors_data(data: List[List[str]]) -> List[TestVector]:
+        def to_vect(line):
+            monero_mnem = None
+            public_addr = None
+            if len(line) == 6:
+                [seed, bip39, passp, ent, monero_mnem, public_addr] = line
+            elif len(line) == 4:
+                [seed, bip39, passp, ent] = line
+            return TestVector(seed, bip39, passp, ent, monero_mnem, public_addr)
+        return [to_vect(line) for line in data]
+
+    @staticmethod
+    def load_vectors_from_file(filename: str) -> List[TestVector]:
+        data = JSONUtils.load_json_file(filename)
+        return JSONUtils.load_vectors_data(data)

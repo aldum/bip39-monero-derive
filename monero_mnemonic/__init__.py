@@ -2,8 +2,8 @@ from enum import IntEnum, unique
 from typing import List, Literal
 from binascii import crc32, unhexlify
 
-from monero.data import wordlist
 from util import IntegerUtils, BytesUtils
+from .data import wordlist
 
 n = wordlist.WORDS_LIST_NUM
 
@@ -99,7 +99,7 @@ def encode_int(seed: int) -> List[str]:
 #     return " ".join(out)
 
 
-def decode(phrase):
+def decode(phrase: List[str]) -> str:
     """Calculate hexadecimal representation of the phrase."""
     phrase = phrase.split(" ")
     out = ""
@@ -111,6 +111,7 @@ def decode(phrase):
         w3 = wordlist.get_word_idx(word3) % n
         x = w1 + n * ((w2 - w1) % n) + n * \
             n * ((w3 - w2) % n)
+        # out += f"%08{x}"
         out += endian_swap(f"%08{x}")
     return out
 

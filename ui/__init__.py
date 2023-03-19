@@ -12,7 +12,7 @@ from bip39 import (
     validate_checksum,
 )
 from bip39.data import wordlist
-from monero import encode_int
+from monero_mnemonic import encode_int
 from slip0010 import derive_monero_master_key
 
 
