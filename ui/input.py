@@ -2,7 +2,8 @@ import curses
 from curses import ascii as asc
 from typing import Optional, Literal, Union
 
-Screen = 'curses._CursesWindow'
+from util import scr_debug_print, Screen
+
 
 Char = Union[str, int]
 
@@ -16,7 +17,7 @@ class Input:
     special: Optional[Special] = None
     isalpha: bool = False
 
-    def __init__(self, got: Optional[Char]):
+    def __init__(self, got: Optional[Char], wide: bool = False):
         if got is None:
             self.empty = True
             return
@@ -39,7 +40,14 @@ class Input:
             self.char = ch
             self.control = None
             if asc.isalpha(ch):
+                scr_debug_print(ch)
                 self.isalpha = True
+        elif wide:
+            ch = got
+            if isinstance(got, str):
+                scr_debug_print(got)
+                self.isalpha = True
+                self.char = got
 
     def is_Esc(self) -> bool:
         return self.special == 'esc'
@@ -58,11 +66,11 @@ class Input:
         return Input(None)
 
     @staticmethod
-    def read_input(screen: Screen) -> Optional['Input']:
+    def read_input(screen: Screen, wide: bool = False) -> Optional['Input']:
         try:
             key: Char = screen.get_wch()
             # screen.addstr(f"got: {key} {type(key)}\n")
-            return Input(key)
+            return Input(key, wide)
 
         except curses.error:
             return None

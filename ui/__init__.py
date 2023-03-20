@@ -115,10 +115,12 @@ def read_word(screen: Screen, prompt: str,
     while not word_entered:
         screen.addstr(y, 0, prompt)
         screen.addstr(''.join(disp_word))
-        key = Input.read_input(screen)
+
         if clear:
             screen.clrtoeol()
             clear = False
+
+        key = Input.read_input(screen, wide=passw)
         if key is None:
             continue
         if key.is_Esc():
