@@ -6,6 +6,7 @@ from binascii import hexlify
 
 from ui.input import Input, Screen
 from ui.pick import pick
+from util import set_debug_screen, scr_debug_print
 from bip39 import (
     Bip39WordsNum,
     validate_checksum,
@@ -14,6 +15,8 @@ from bip39.data import wordlist
 from monero_mnemonic import encode_int
 from slip0010.sd import SeedDerivation
 
+DEBUG: bool = False
+# DEBUG = True
 
 _initPrompt = """BIP39-Monero Mnemonic Converter v0.1
 Convert your English BIP39 mnemonic into a 25-word Monero mnemonic according to SLIP10. """
@@ -88,7 +91,9 @@ def yesno_to_bool(yn: str) -> bool:
 
 def read_passphrase(screen: Screen) -> str:
     screen.clear()
-    phrase = read_word(screen, prompts["bip39_input_passphrase"], passw=True)
+    phrase = read_word(screen,
+                       prompts["bip39_input_passphrase"],
+                       passw=True)
     return phrase
 
 
@@ -97,6 +102,7 @@ def read_word(screen: Screen, prompt: str,
     (y, _) = screen.getyx()
     word = []
     disp_word = []
+    clear: bool = False
 
     def add_char(ch: str) -> None:
         if passw:
@@ -109,13 +115,19 @@ def read_word(screen: Screen, prompt: str,
     while not word_entered:
         screen.addstr(y, 0, prompt)
         screen.addstr(''.join(disp_word))
-        screen.clrtoeol()
         key = Input.read_input(screen)
+        if clear:
+            screen.clrtoeol()
+            clear = False
+        if key is None:
+            continue
         if key.is_Esc():
             raise KeyboardInterrupt
         if key.isalpha:
             if validate(key.char):
-                char = key.char.lower()
+                char = key.char
+                if not passw:
+                    char = key.char.lower()
                 add_char(char)
         if key.is_enter():
             word_entered = True
@@ -128,6 +140,7 @@ def read_word(screen: Screen, prompt: str,
             word = word[:-1]
             disp_word = disp_word[:-1]
             screen.addstr(''.join(disp_word))
+            clear = True
 
     return ''.join(word)
 
@@ -176,12 +189,13 @@ def read_words(screen: Screen, biplen: int) -> List[str]:
 
 
 def program(screen: Screen):
+    set_debug_screen(screen, DEBUG)
+
     curses.init_pair(1, curses.COLOR_GREEN, curses.COLOR_BLACK)
     curses.init_pair(2, curses.COLOR_RED, curses.COLOR_BLACK)
+    curses.init_pair(3, curses.COLOR_YELLOW, curses.COLOR_BLACK)
     screen.clear()
 
-    DEBUG: bool = False
-    # DEBUG = True
     if DEBUG:
         biplen = 12
     else:
@@ -194,10 +208,9 @@ def program(screen: Screen):
         if DEBUG:
             # bip39_phrase: str = ' '.join(["bacon"] * biplen)
             # words: List[str] = ["bacon"] * biplen
-            words: List[str] = \
-                'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about' \
-                .split(' ')
-            # 'coach someone found provide arch ritual outside spike unit enter margin warm' \
+            # 'coach someone found provide arch ritual outside spike unit enter margin warm'
+            mnem = 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about'  # pylint: disable=C0301
+            words: List[str] = mnem.split(' ')
         else:
             words = read_words(screen, biplen)
         mnem_valid = True
