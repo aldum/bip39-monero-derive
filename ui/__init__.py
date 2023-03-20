@@ -243,11 +243,13 @@ def program(screen: Screen):
     screen.addstr(prompts["monero_mnem"])
     screen.addstr("\n\n")
     mnem_words: List[str] = sd.electrum_words.split(' ')
-    SPLIT = 6
-    for i in range(len(mnem_words) // SPLIT):
-        chunk = mnem_words[i * SPLIT:(i * SPLIT) + SPLIT]
-        screen.addstr(' '.join(chunk))
-        screen.addstr("\n")
+    for word in mnem_words:
+        (_, x) = screen.getyx()
+        (_, mx) = screen.getmaxyx()
+        l = len(word)
+        if (l + 1) > (mx - x):
+            screen.addstr("\n")
+        screen.addstr(f'{word} ')
 
     wait_enter(screen, "end")
 
