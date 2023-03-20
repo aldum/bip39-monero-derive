@@ -49,23 +49,11 @@ WORD_BIT_LEN: int = 11
 SEED_PBKDF2_ROUNDS: int = 2048
 
 
-def prf(p, s):
-    hx = hmac.new(p, msg=s, digestmod=hashlib.sha512)
-    return hx.digest()
-
-
 def link(s, pw, prf):
     s[0], s[1] = s[1], prf(pw, s[1])
     return s[0]
 
 
-# def mnemonics_to_seed(mnemonics: str, passphrase: Optional[str] = None) -> bytes:
-#     words = mnemonics.split(' ')
-#     mnemonic_bin_str = map(lambda word:
-#                            IntegerUtils.to_binary_str(
-#                                wordlist.get_word_idx(word), WORD_BIT_LEN),
-#                            words)
-#     return ''.join(mnemonic_bin_str)
 def mnemonics_to_seed(seed, passphrase=b""):
     salt = b"mnemonic" + passphrase
 
@@ -74,16 +62,6 @@ def mnemonics_to_seed(seed, passphrase=b""):
         return hx.digest()
 
     res = PBKDF2(password=seed, salt=salt, dkLen=64, prf=prf, count=2048)
-    return res
-
-
-def mnemonics_to_ent(mnemonics: str, passphrase: Optional[str] = None) -> bytes:
-    if passphrase is None:
-        passphrase = b""
-    salt = b"mnemonic" + to_bytes(passphrase)
-
-    res = PBKDF2(password=mnemonics, salt=salt, dkLen=64,
-                 prf=prf, count=SEED_PBKDF2_ROUNDS)
     return res
 
 
@@ -130,7 +108,7 @@ def validate_checksum(seed: List[str], n_words: Bip39WordsNum) -> bool:
     return checksum_bin_str == checksum_bin_str_computed
 
 
-def normalize_NKFD(data_str: str) -> str:
+def normalize_NFKD(data_str: str) -> str:
     """
     Normalize string using NFKD.
 
