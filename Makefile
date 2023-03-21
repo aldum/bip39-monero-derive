@@ -11,7 +11,11 @@ dist_exe:
 	pyinstaller -F derive.py
 
 dist_mac:
-        pyinstaller --target-arch universal2 -F derive.py
+	pyinstaller --target-arch universal2 -F derive.py
 
 dist_script:
-	stickytape derive.py --add-python-path . --python-binary .venv/bin/python --output-file dist/prog.py
+	stickytape derive.py \
+		--add-python-path . \
+		--add-python-module 'importlib.machinery' \
+		--python-binary .venv/bin/python \
+		--output-file dist/prog.py
