@@ -21,6 +21,10 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: |
-          sudo apt install python3-poetry automake
-          poetry install
+          sudo apt install automake
+          python -m venv .venv
+          source .venv/bin/activate
+          pip install --upgrade pip
+          pip install poetry
+          poetry install || true
           make dist_script
