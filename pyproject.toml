@@ -9,17 +9,11 @@ packages = [{include = "bip39_monero_derive"}]
 
 [tool.poetry.dependencies]
 python = ">=3.9,<3.12"
-pick = "^2.2.0"
-ecdsa = "^0.18.0"
 
 [tool.poetry.group.dev.dependencies]
-black = "^23.1.0"
 stickytape = "^0.2.1"
 pyinstaller = "^5.8.0"
-autopep8 = "^2.0.2"
-pycryptodome = "^3.17"
-bip-utils = "^2.7.0"
-monero = "^1.1.1"
+ecdsa = "^0.18.0"
 
 [build-system]
 requires = ["poetry-core"]
