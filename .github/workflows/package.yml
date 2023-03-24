@@ -27,4 +27,10 @@ jobs:
           pip install --upgrade pip
           pip install poetry
           poetry install || true
+          pip install stickytape
           make dist_script
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: derive-linux
+          path: dist/
