@@ -1,21 +1,44 @@
 # vi: set noet:
 
+BIN=.venv/bin/
+
+uname_S := $(shell sh -c 'uname -s 2>/dev/null || echo not')
+uname_M := $(shell sh -c 'uname -m 2>/dev/null || echo not')
+UNI =
+ifeq ($(uname_S),Linux)
+	OS = linux
+endif
+ifneq (,$(findstring arm,$(uname_M)))
+	ARCH = arm
+endif
+ifneq (,$(findstring x86_64,$(uname_M)))
+	ARCH = x64
+endif
+ifneq (,$(findstring riscv,$(uname_M)))
+	ARCH = $(uname_M)
+endif
+ifeq ($(uname_S),Darwin)
+	OS = macos
+	ARCH = universal
+	UNI = --target-arch universal2
+endif
+
 test:
 	/usr/bin/env python derive.py
-
 
 clean:
 	rm -rf dist/*
 
-dist_exe:
-	pyinstaller -F derive.py
+dist_exe: check_venv
+	$(BIN)pyinstaller -F derive.py $(UNI) -n derive-$(OS)-$(ARCH)
 
-dist_mac:
-	pyinstaller --target-arch universal2 -F derive.py
-
-dist_script:
-	stickytape derive.py \
+dist_script: check_venv
+	$(BIN)stickytape derive.py \
 		--add-python-path . \
 		--add-python-module 'importlib.machinery' \
 		--python-binary .venv/bin/python \
 		--output-file dist/prog.py
+
+check_venv:
+	test -f $(BIN)python
+
