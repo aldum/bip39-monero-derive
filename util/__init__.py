@@ -232,6 +232,13 @@ def lower_escdelay():
     os.environ.setdefault('ESCDELAY', '25')
 
 
+def get_debug():
+    dbg = os.environ.get('DEBUG')
+    if dbg in [1, '1', 'true', 'y']:
+        return True
+    return False
+
+
 def memoize(f):
     """Memoization decorator for a function taking one or more arguments."""
 

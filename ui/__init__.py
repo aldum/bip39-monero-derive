@@ -6,7 +6,7 @@ from binascii import hexlify
 
 from ui.input import Input, Screen
 from ui.pick import pick
-from util import set_debug_screen, scr_debug_print
+from util import set_debug_screen, scr_debug_print, get_debug
 from bip39 import (
     Bip39WordsNum,
     validate_checksum,
@@ -17,6 +17,9 @@ from slip0010.sd import SeedDerivation
 
 DEBUG: bool = False
 # DEBUG = True
+if get_debug():
+    DEBUG = True
+
 
 _initPrompt = """BIP39-Monero Mnemonic Converter v0.1
 Convert your English BIP39 mnemonic into a 25-word Monero mnemonic according to SLIP10. """
