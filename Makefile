@@ -36,7 +36,7 @@ dist_script: check_venv
 	$(BIN)stickytape derive.py \
 		--add-python-path . \
 		--add-python-module 'importlib.machinery' \
-		--python-binary .venv/bin/python \
+		--python-binary $(BIN)python \
 		--output-file dist/prog.py
 
 check_venv:

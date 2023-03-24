@@ -13,10 +13,25 @@ files = [
 ]
 
 [[package]]
+name = "base58"
+version = "2.1.1"
+description = "Base58 and Base58Check implementation."
+category = "dev"
+optional = false
+python-versions = ">=3.5"
+files = [
+    {file = "base58-2.1.1-py3-none-any.whl", hash = "sha256:11a36f4d3ce51dfc1043f3218591ac4eb1ceb172919cebe05b52a5bcc8d245c2"},
+    {file = "base58-2.1.1.tar.gz", hash = "sha256:c5d0cb3f5b6e81e8e35da5754388ddcc6d0d14b6c6a132cb93d69ed580a7278c"},
+]
+
+[package.extras]
+tests = ["PyHamcrest (>=2.0.2)", "mypy", "pytest (>=4.6)", "pytest-benchmark", "pytest-cov", "pytest-flake8"]
+
+[[package]]
 name = "ecdsa"
 version = "0.18.0"
 description = "ECDSA cryptographic signature library (pure python)"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
 files = [
@@ -30,6 +45,17 @@ six = ">=1.9.0"
 [package.extras]
 gmpy = ["gmpy"]
 gmpy2 = ["gmpy2"]
+
+[[package]]
+name = "ed25519"
+version = "1.5"
+description = "Ed25519 public-key signatures"
+category = "dev"
+optional = false
+python-versions = "*"
+files = [
+    {file = "ed25519-1.5.tar.gz", hash = "sha256:02053ee019ceef0df97294be2d4d5a8fc120fc86e81e08bec1245fc0f9403358"},
+]
 
 [[package]]
 name = "macholib"
@@ -137,7 +163,7 @@ testing-integration = ["build[virtualenv]", "filelock (>=3.4.0)", "jaraco.envs (
 name = "six"
 version = "1.16.0"
 description = "Python 2 and 3 compatibility utilities"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
 files = [
@@ -160,4 +186,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.12"
-content-hash = "3f1cac100f5c630c6508d02305b395d1c0591b4360e0a9ae068439a5990b3bc1"
+content-hash = "dd04d0eafb883644b79d69eb469306022e67fe781f23b0a627f1252ffb2f494e"

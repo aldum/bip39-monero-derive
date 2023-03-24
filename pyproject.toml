@@ -5,15 +5,16 @@ description = "Standalone utility for deriving Monero mnemonic seeds from standa
 authors = ["aldum <aldum@artixlinux.org>"]
 license = "MIT"
 readme = "README.md"
-packages = [{include = "bip39_monero_derive"}]
 
 [tool.poetry.dependencies]
 python = ">=3.9,<3.12"
+ecdsa = "^0.18.0"
 
 [tool.poetry.group.dev.dependencies]
 stickytape = "^0.2.1"
 pyinstaller = "^5.8.0"
-ecdsa = "^0.18.0"
+ed25519 = "^1.5"
+base58 = "^2.1.1"
 
 [build-system]
 requires = ["poetry-core"]
