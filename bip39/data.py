@@ -1,7 +1,7 @@
-from util.wordlist import Wordlist
+from util.wordlist import Wordlist, Singleton
 
 
-class BitcoinWordlist(Wordlist):
+class BitcoinWordlist(Wordlist, metaclass=Singleton):
     wordlist = [
         "abandon",
         "ability",

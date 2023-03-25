@@ -1,7 +1,7 @@
-from util.wordlist import Wordlist
+from util.wordlist import Wordlist, Singleton
 
 
-class MoneroWordlist(Wordlist):
+class MoneroWordlist(Wordlist, metaclass=Singleton):
     unique_prefix_length = 3
 
     # pylint: disable=C0302
