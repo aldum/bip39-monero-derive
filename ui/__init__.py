@@ -168,6 +168,11 @@ def write_err(screen: Screen, text: str):
     _write_color(screen, text, 2)
 
 
+def write_info(screen: Screen, text: str):
+    screen.addstr(text, curses.A_DIM)
+    # _write_color(screen, text, 3)
+
+
 def _write_color(screen: Screen, text: str, pair: int):
     # (y, _) = screen.getyx()
     # screen.addstr(f"{text} {y}", curses.color_pair(1))
@@ -178,17 +183,24 @@ def read_words(screen: Screen, biplen: int) -> List[str]:
     words: List[str] = []
     for n in range(1, biplen + 1):
         word_valid: bool = False
+        word_prefix: bool = False
+        full_word: str = ''
         while not word_valid:
             word: str = read_word(screen, prompts["bip39_word"](n, biplen))
-            word_valid = wordlist.contains(word)
+            if len(word) <= wordlist.unique_prefix_length and word in wordlist.unique_prefixes:
+                full_word = wordlist.unique_prefixes[word]
+                word_prefix = True
+            else:
+                full_word = word
+            word_valid = wordlist.contains(full_word)
             if not word_valid:
                 screen.addstr(' ')
                 write_err(screen, prompts["bip39_word_invalid"](word))
-            # else:
-            #     write_ok(screen, "OK. ")
+            if word_prefix:
+                write_info(screen, f' ({full_word})')
             advance_line(screen)
 
-        words.append(''.join(word))
+        words.append(''.join(full_word))
 
     return words
 
