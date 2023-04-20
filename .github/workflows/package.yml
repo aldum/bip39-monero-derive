@@ -1,5 +1,8 @@
 name: Python package
 
+env:
+  ACTIONS_STEP_DEBUG: true
+
 on:
   push:
     paths:
