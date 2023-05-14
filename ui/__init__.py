@@ -65,9 +65,12 @@ def wait_enter(screen: Screen, prompt: str):
     screen.addstr("\n\n" + prompts[prompt])
     word_entered = False
     while not word_entered:
-        key = Input.read_input(screen)
-        if key.is_enter() or key.is_Esc():
-            word_entered = True
+        try:
+            key = Input.read_input(screen)
+            if key.is_enter() or key.is_Esc():
+                word_entered = True
+        except AttributeError:
+            pass
 
 
 def wait(screen: Screen):
