@@ -93,6 +93,12 @@ def yesno_to_bool(yn: str) -> bool:
     return ci in ('yes', 'y')
 
 
+def bool_to_yesno(b: bool) -> str:
+    if b:
+        return 'yes'
+    return 'no'
+
+
 def read_passphrase(screen: Screen) -> str:
     screen.clear()
     phrase = read_word(screen,
@@ -206,7 +212,25 @@ def read_words(screen: Screen, biplen: int) -> List[str]:
     return words
 
 
-def program(screen: Screen):
+def _endscreen(screen: Screen, sd: SeedDerivation, bippass: bool) -> None:
+    screen.addstr(prompts["monero_mnem"])
+    screen.addstr("\n\n")
+    mnem_words: List[str] = sd.electrum_words.split(' ')
+    for word in mnem_words:
+        (_, x) = screen.getyx()
+        (_, mx) = screen.getmaxyx()
+        l = len(word)
+        if (l + 1) > (mx - x):
+            screen.addstr("\n")
+        screen.addstr(f'{word} ')
+
+    screen.addstr("\n")
+    screen.addstr("\n")
+    screen.addstr("Passphrase: " + bool_to_yesno(bippass))
+    wait_enter(screen, "end")
+
+
+def program(screen: Screen) -> None:
     set_debug_screen(screen, DEBUG)
 
     curses.init_pair(1, curses.COLOR_GREEN, curses.COLOR_BLACK)
@@ -256,18 +280,7 @@ def program(screen: Screen):
     screen.addstr("\n")
     screen.addstr("\n")
     sd = SeedDerivation.derive_monero(bip39_phrase, passphrase)
-    screen.addstr(prompts["monero_mnem"])
-    screen.addstr("\n\n")
-    mnem_words: List[str] = sd.electrum_words.split(' ')
-    for word in mnem_words:
-        (_, x) = screen.getyx()
-        (_, mx) = screen.getmaxyx()
-        l = len(word)
-        if (l + 1) > (mx - x):
-            screen.addstr("\n")
-        screen.addstr(f'{word} ')
-
-    wait_enter(screen, "end")
+    _endscreen(screen, sd, bippass)
 
 
 def bye():
