@@ -29,6 +29,7 @@ _bip39_length = "How many words are in your BIP39 mnemonic?"
 prompts = {
     "anykey": "Press any key to contine.",
     "bip39_length": f"""{_initPrompt}\n\n{_bip39_length}""",
+    "bip39_info": 'Full and shortened BIP39 words (first four letters) are both accepted.',
     "bip39_word": lambda n, s: f"Enter word #{n:02}/{s}: ",
     "bip39_word_invalid": lambda w = '': f"Invalid word. Try again. ({w})",
     "bip39_invalid": "Invalid mnemonic. Try again. ",
@@ -181,6 +182,8 @@ def _write_color(screen: Screen, text: str, pair: int):
 
 
 def read_words(screen: Screen, biplen: int) -> List[str]:
+    fit_output(screen, prompts["bip39_info"])
+    screen.addstr("\n\n")
     words: List[str] = []
     for n in range(1, biplen + 1):
         word_valid: bool = False
