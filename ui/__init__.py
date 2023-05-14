@@ -6,7 +6,7 @@ from typing import List, Optional
 
 from ui.input import Input, Screen
 from ui.pick import pick
-from util.screen import yesno_to_bool, bool_to_yesno
+from util.screen import yesno_to_bool, bool_to_yesno, fit_output, break_output, check_dimensions
 from util.debug import set_debug_screen, get_debug
 # from util.debug import set_debug_screen, scr_debug_print, get_debug
 from bip39 import (
@@ -24,12 +24,11 @@ if get_debug():
 _initPrompt = """BIP39-Monero Mnemonic Converter v0.1
 Convert your English BIP39 mnemonic into a 25-word Monero mnemonic according to SLIP10.
 You can quit any time by pressing Escape."""
+_bip39_length = "How many words are in your BIP39 mnemonic?"
 
 prompts = {
-    "init": _initPrompt,
     "anykey": "Press any key to contine.",
-    # "bip39_length": "How many words are in your BIP39 mnemonic?",
-    "bip39_length": f"""{_initPrompt}\n\nHow many words are in your BIP39 mnemonic?""",
+    "bip39_length": f"""{_initPrompt}\n\n{_bip39_length}""",
     "bip39_word": lambda n, s: f"Enter word #{n:02}/{s}: ",
     "bip39_word_invalid": lambda w = '': f"Invalid word. Try again. ({w})",
     "bip39_invalid": "Invalid mnemonic. Try again. ",
@@ -57,12 +56,14 @@ def validate(c: str) -> bool:
 
 def wait_msg(screen: Screen, prompt: Optional[str] = None):
     if prompt is not None:
-        screen.addstr("\n\n" + prompts[prompt] + "\n")
+        screen.addstr("\n\n")
+        screen.addstr(prompts[prompt] + "\n")
     screen.getch()
 
 
 def wait_enter(screen: Screen, prompt: str):
-    screen.addstr("\n\n" + prompts[prompt])
+    screen.addstr("\n\n")
+    fit_output(screen, prompts[prompt])
     word_entered = False
     while not word_entered:
         try:
@@ -83,7 +84,8 @@ def picker(screen: Screen, key: str):
 
 def _picker(screen: Screen, opts: List[str], prompt: str):
     # selected, ind = pick(options[key], prompts[key], "=>", screen)
-    ret = pick(opts, prompt, indicator="=>",
+    ps = break_output(screen, prompt)
+    ret = pick(opts, ps, indicator="=>",
                screen=screen, wraparaound=False)
     if ret is None:
         raise KeyboardInterrupt
@@ -207,17 +209,8 @@ def read_words(screen: Screen, biplen: int) -> List[str]:
 def _endscreen(screen: Screen, sd: SeedDerivation, bippass: bool) -> None:
     screen.addstr(prompts["monero_mnem"])
     screen.addstr("\n\n")
-    mnem_words: List[str] = sd.electrum_words.split(' ')
-    for word in mnem_words:
-        (_, x) = screen.getyx()
-        (_, mx) = screen.getmaxyx()
-        wl = len(word)
-        if (wl + 1) > (mx - x):
-            screen.addstr("\n")
-        screen.addstr(f'{word} ')
-
-    screen.addstr("\n")
-    screen.addstr("\n")
+    fit_output(screen, sd.electrum_words)
+    screen.addstr("\n\n")
     screen.addstr("Passphrase: " + bool_to_yesno(bippass))
     wait_enter(screen, "end")
 
@@ -265,12 +258,10 @@ def program(screen: Screen) -> None:
 
     screen.clear()
     screen.addstr("\n")
-    screen.addstr(prompts["bip39_mnem"])
-    screen.addstr("\n")
-    screen.addstr("\n")
-    screen.addstr(bip39_phrase)
-    screen.addstr("\n")
-    screen.addstr("\n")
+    fit_output(screen, prompts["bip39_mnem"])
+    screen.addstr("\n\n")
+    fit_output(screen, bip39_phrase)
+    screen.addstr("\n\n")
     sd = SeedDerivation.derive_monero(bip39_phrase, passphrase)
     _endscreen(screen, sd, bippass)
 
