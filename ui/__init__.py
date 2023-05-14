@@ -22,7 +22,8 @@ if get_debug():
 
 
 _initPrompt = """BIP39-Monero Mnemonic Converter v0.1
-Convert your English BIP39 mnemonic into a 25-word Monero mnemonic according to SLIP10. """
+Convert your English BIP39 mnemonic into a 25-word Monero mnemonic according to SLIP10.
+You can quit any time by pressing Escape."""
 
 prompts = {
     "init": _initPrompt,
