@@ -221,7 +221,8 @@ def scr_debug_print(s: str) -> None:
 
 def handler(sig, _handler):
     if sig == signal.SIGINT:
-        print("Ctrl+C pressed.")
+        # print("Ctrl+C pressed.")
+        pass
 
 
 def catch_sigint():
