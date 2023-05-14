@@ -27,3 +27,6 @@ script = "bip39_monero_derive:main"
 filterwarnings = [
   "ignore::pytest.PytestCollectionWarning"
 ]
+
+[tool.ruff]
+line-length = 100

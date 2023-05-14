@@ -2,7 +2,8 @@ import curses
 from curses import ascii as asc
 from typing import Optional, Literal, Union
 
-from util import scr_debug_print, Screen
+from util import Screen
+from util.debug import scr_debug_print
 
 
 Char = Union[str, int]

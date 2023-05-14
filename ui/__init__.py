@@ -1,22 +1,22 @@
 """UI"""
 import curses
-from curses import ascii as asc
+# from curses import ascii as asc
 from typing import List, Optional
-from binascii import hexlify
+# from binascii import hexlify
 
 from ui.input import Input, Screen
 from ui.pick import pick
-from util import set_debug_screen, scr_debug_print, get_debug
+from util.screen import yesno_to_bool, bool_to_yesno
+from util.debug import set_debug_screen, get_debug
+# from util.debug import set_debug_screen, scr_debug_print, get_debug
 from bip39 import (
     Bip39WordsNum,
     validate_checksum,
 )
 from bip39.data import wordlist
-from monero_mnemonic import encode_int
 from slip0010.sd import SeedDerivation
 
 DEBUG: bool = False
-# DEBUG = True
 if get_debug():
     DEBUG = True
 
@@ -86,17 +86,6 @@ def _picker(screen: Screen, opts: List[str], prompt: str):
         raise KeyboardInterrupt
     selected, _ = ret
     return selected
-
-
-def yesno_to_bool(yn: str) -> bool:
-    ci = yn.lower()
-    return ci in ('yes', 'y')
-
-
-def bool_to_yesno(b: bool) -> str:
-    if b:
-        return 'yes'
-    return 'no'
 
 
 def read_passphrase(screen: Screen) -> str:
@@ -219,8 +208,8 @@ def _endscreen(screen: Screen, sd: SeedDerivation, bippass: bool) -> None:
     for word in mnem_words:
         (_, x) = screen.getyx()
         (_, mx) = screen.getmaxyx()
-        l = len(word)
-        if (l + 1) > (mx - x):
+        wl = len(word)
+        if (wl + 1) > (mx - x):
             screen.addstr("\n")
         screen.addstr(f'{word} ')
 
@@ -251,7 +240,7 @@ def program(screen: Screen) -> None:
             # bip39_phrase: str = ' '.join(["bacon"] * biplen)
             # words: List[str] = ["bacon"] * biplen
             # 'coach someone found provide arch ritual outside spike unit enter margin warm'
-            mnem = 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about'  # pylint: disable=C0301
+            mnem = 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about'  # noqa: E501 # pylint: disable=C0301
             words: List[str] = mnem.split(' ')
         else:
             words = read_words(screen, biplen)

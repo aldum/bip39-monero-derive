@@ -1,18 +1,14 @@
 """Utility functions"""
 import os
 import signal
-import curses
 import hashlib
 from sys import stderr
-from typing import Union, List, Literal, Optional
+from typing import Union, Literal, Optional
 from hashlib import sha256
 from binascii import unhexlify
 from functools import wraps
 
-
 Screen = 'curses._CursesWindow'
-DEBUG: bool
-__DBG_SCREEN: Screen
 
 
 def to_bytes(s: Union[bytes, bytearray, str, memoryview],
@@ -183,40 +179,15 @@ class BytesUtils:
 
 
 def strxor(s1: bytes, s2: bytes) -> bytes:
-    l = len(s1)
-    ret = bytearray(l)
-    for i in range(0, l):
+    sl = len(s1)
+    ret = bytearray(sl)
+    for i in range(0, sl):
         ret[i] = s1[i] ^ s2[i]
     return ret
 
 
 def err_print(s: str):
     print(s, file=stderr)
-
-
-def set_debug_screen(screen: Screen, debug: bool) -> None:
-    global __DBG_SCREEN  # pylint: disable=W0603
-    __DBG_SCREEN = screen
-    global DEBUG  # pylint: disable=W0603
-    DEBUG = debug
-
-
-def scr_debug_print(s: str) -> None:
-    if DEBUG:
-        s = str(s)
-        screen = __DBG_SCREEN
-        (y, x) = screen.getyx()
-        (_, mx) = screen.getmaxyx()
-        slack = mx - x
-        clear = ' ' * slack
-        l = len(s)
-        pad = 2
-        padded = l + 2 * pad
-        if padded <= slack:
-            __DBG_SCREEN.addstr(clear)
-            # __DBG_SCREEN.addstr(y, x + 3, s, curses.color_pair(3))
-            __DBG_SCREEN.addstr(y, mx - l - pad, s, curses.color_pair(3))
-            __DBG_SCREEN.move(y, x)
 
 
 def handler(sig, _handler):
@@ -231,13 +202,6 @@ def catch_sigint():
 
 def lower_escdelay():
     os.environ.setdefault('ESCDELAY', '25')
-
-
-def get_debug():
-    dbg = os.environ.get('DEBUG')
-    if dbg in [1, '1', 'true', 'y']:
-        return True
-    return False
 
 
 def memoize(f):
