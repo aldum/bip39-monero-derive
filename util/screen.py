@@ -32,3 +32,8 @@ def break_output(screen: Screen, s: str) -> str:
             line = w
     broken.append(line.strip())
     return '\n'.join(broken)
+
+
+def check_dimensions(screen: Screen) -> bool:
+    (my, mx) = screen.getmaxyx()
+    return mx >= 70 and my >= 15

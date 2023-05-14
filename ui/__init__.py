@@ -215,7 +215,9 @@ def _endscreen(screen: Screen, sd: SeedDerivation, bippass: bool) -> None:
     wait_enter(screen, "end")
 
 
-def program(screen: Screen) -> None:
+def program(screen: Screen) -> bool:
+    if not check_dimensions(screen):
+        raise AssertionError('We need a bigger terminal')
     set_debug_screen(screen, DEBUG)
 
     curses.init_pair(1, curses.COLOR_GREEN, curses.COLOR_BLACK)

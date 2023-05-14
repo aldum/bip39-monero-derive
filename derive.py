@@ -12,6 +12,8 @@ def __main__():
         wrapper(ui.program)
     except KeyboardInterrupt:
         ui.bye()
+    except AssertionError as e:
+        print(e)
 
 
 __main__()
