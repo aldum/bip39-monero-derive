@@ -37,6 +37,8 @@ prompts = {
     "bip39_mnem": "Your BIP39 mnemonic: ",
     "bip39_passphrase?": "Do you use a passphrase?",
     "bip39_input_passphrase": "Passphrase: ",
+    "bip39_confirm_passphrase": "Confirm passphrase: ",
+    "bip39_passphrase_mismatch": "The passphrases don't match!",
 
     "monero_mnem": "Your derived Monero mnemonic: ",
 
@@ -94,11 +96,32 @@ def _picker(screen: Screen, opts: List[str], prompt: str):
     return selected
 
 
+def advance_line(screen: Screen):
+    (my, _) = screen.getmaxyx()
+    (y, _) = screen.getyx()
+    ny = y + 1
+    if ny >= my - 1:
+        screen.clear()
+        ny = 0
+    screen.addstr(ny, 0, '')
+
+
 def read_passphrase(screen: Screen) -> str:
     screen.clear()
-    phrase = read_word(screen,
-                       prompts["bip39_input_passphrase"],
-                       passw=True)
+    matching = False
+    while not matching:
+        phrase = read_word(screen,
+                           prompts["bip39_input_passphrase"],
+                           passw=True)
+        advance_line(screen)
+        confirm = read_word(screen,
+                            prompts["bip39_confirm_passphrase"],
+                            passw=True)
+        matching = phrase == confirm
+        if not matching:
+            advance_line(screen)
+            fit_output(screen, prompts["bip39_passphrase_mismatch"])
+            advance_line(screen)
     return phrase
 
 
@@ -150,16 +173,6 @@ def read_word(screen: Screen, prompt: str,
             clear = True
 
     return ''.join(word)
-
-
-def advance_line(screen: Screen):
-    (my, _) = screen.getmaxyx()
-    (y, _) = screen.getyx()
-    ny = y + 1
-    if ny >= my - 1:
-        screen.clear()
-        ny = 0
-    screen.addstr(ny, 0, '')
 
 
 def write_ok(screen: Screen, text: str):
