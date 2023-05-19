@@ -215,7 +215,7 @@ def _endscreen(screen: Screen,
     fit_info_output(screen, prompts["bip39_mnem"])
     screen.addstr("\n\n")
     fit_info_output(screen, bip39_phrase)
-    screen.addstr("\n")
+    screen.addstr("\n\n")
     write_info(screen, "Passphrase: " + bool_to_yesno(has_pass))
     screen.addstr("\n\n")
     screen.addstr(prompts["monero_mnem"])
