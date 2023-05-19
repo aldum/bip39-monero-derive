@@ -1,20 +1,27 @@
 """UI"""
-import curses
-# from curses import ascii as asc
-from typing import List, Optional
-# from binascii import hexlify
-
-from ui.input import Input, Screen
-from ui.pick import pick
-from util.screen import yesno_to_bool, bool_to_yesno, fit_output, break_output, check_dimensions
-from util.debug import set_debug_screen, get_debug
-# from util.debug import set_debug_screen, scr_debug_print, get_debug
+from slip0010.sd import SeedDerivation
+from bip39.data import wordlist
 from bip39 import (
     Bip39WordsNum,
     validate_checksum,
 )
-from bip39.data import wordlist
-from slip0010.sd import SeedDerivation
+from util.debug import set_debug_screen, get_debug
+from typing import List, Optional
+
+from ui.input import Input, Screen
+from ui.pick import pick
+from util.screen import (
+    advance_line,
+    yesno_to_bool,
+    bool_to_yesno,
+    fit_output,
+    break_output,
+    check_dimensions,
+    setup_colors,
+    write_err,
+    write_info,
+    write_ok
+)
 
 DEBUG: bool = False
 if get_debug():
@@ -101,16 +108,6 @@ def _picker(screen: Screen, opts: List[str], prompt: str):
     return selected
 
 
-def advance_line(screen: Screen):
-    (my, _) = screen.getmaxyx()
-    (y, _) = screen.getyx()
-    ny = y + 1
-    if ny >= my - 1:
-        screen.clear()
-        ny = 0
-    screen.addstr(ny, 0, '')
-
-
 def read_passphrase(screen: Screen) -> str:
     screen.clear()
     matching = False
@@ -180,25 +177,6 @@ def read_word(screen: Screen, prompt: str,
     return ''.join(word)
 
 
-def write_ok(screen: Screen, text: str):
-    _write_color(screen, text, 1)
-
-
-def write_err(screen: Screen, text: str):
-    _write_color(screen, text, 2)
-
-
-def write_info(screen: Screen, text: str):
-    screen.addstr(text, curses.A_DIM)
-    # _write_color(screen, text, 3)
-
-
-def _write_color(screen: Screen, text: str, pair: int):
-    # (y, _) = screen.getyx()
-    # screen.addstr(f"{text} {y}", curses.color_pair(1))
-    screen.addstr(text, curses.color_pair(pair))
-
-
 def read_words(screen: Screen, biplen: int) -> List[str]:
     fit_output(screen, prompts["bip39_info"])
     screen.addstr("\n\n")
@@ -249,10 +227,8 @@ def program(screen: Screen) -> bool:
     if not check_dimensions(screen):
         raise AssertionError('We need a bigger terminal')
     set_debug_screen(screen, DEBUG)
+    setup_colors()
 
-    curses.init_pair(1, curses.COLOR_GREEN, curses.COLOR_BLACK)
-    curses.init_pair(2, curses.COLOR_RED, curses.COLOR_BLACK)
-    curses.init_pair(3, curses.COLOR_YELLOW, curses.COLOR_BLACK)
     screen.clear()
 
     if DEBUG:
