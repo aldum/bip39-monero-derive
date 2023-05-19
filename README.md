@@ -1,3 +1,9 @@
+## BIP39 Monero mnemonic converter
+
+![logo](img/logo_grad.png)
+
+Convert your English BIP39 mnemonic into a 25-word Monero mnemonic according to the SLIP-0010 standard.
+
 ### Dev setup
 
 #### prerequisites
