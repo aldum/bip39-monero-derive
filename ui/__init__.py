@@ -20,10 +20,15 @@ DEBUG: bool = False
 if get_debug():
     DEBUG = True
 
+version = '0.1.0'
 
-_initPrompt = """BIP39-Monero Mnemonic Converter v0.1
+_initPrompt = f"""BIP39-Monero Mnemonic Converter v{version}
+
 Convert your English BIP39 mnemonic into a 25-word Monero mnemonic according to SLIP10.
-You can quit any time by pressing Escape."""
+You can quit any time by pressing Escape.
+
+https://github.com/aldum/bip39-monero-derive
+"""
 _bip39_length = "How many words are in your BIP39 mnemonic?"
 
 prompts = {

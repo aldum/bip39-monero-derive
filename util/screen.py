@@ -1,3 +1,4 @@
+
 from . import Screen
 
 
@@ -36,4 +37,4 @@ def break_output(screen: Screen, s: str) -> str:
 
 def check_dimensions(screen: Screen) -> bool:
     (my, mx) = screen.getmaxyx()
-    return mx >= 70 and my >= 15
+    return mx >= 70 and my >= 20
