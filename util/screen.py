@@ -18,6 +18,16 @@ def fit_output(screen: Screen, s: str) -> None:
     screen.addstr(break_output(screen, s))
 
 
+def fit_err_output(screen: Screen, s: str) -> None:
+    text = break_output(screen, s)
+    write_err(screen, text)
+
+
+def fit_info_output(screen: Screen, s: str) -> None:
+    text = break_output(screen, s)
+    write_info(screen, text)
+
+
 def advance_line(screen: Screen):
     (my, _) = screen.getmaxyx()
     (y, _) = screen.getyx()

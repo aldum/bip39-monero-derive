@@ -15,6 +15,7 @@ from util.screen import (
     yesno_to_bool,
     bool_to_yesno,
     fit_output,
+    fit_err_output,
     break_output,
     check_dimensions,
     setup_colors,
@@ -50,7 +51,7 @@ prompts = {
     "bip39_passphrase?": "Do you use a passphrase?",
     "bip39_input_passphrase": "Passphrase: ",
     "bip39_confirm_passphrase": "Confirm passphrase: ",
-    "bip39_passphrase_mismatch": "The passphrases don't match!",
+    "bip39_passphrase_mismatch": "The passphrases don't match! Try again.",
 
     "monero_mnem": "Your derived Monero mnemonic: ",
 
@@ -122,7 +123,7 @@ def read_passphrase(screen: Screen) -> str:
         matching = phrase == confirm
         if not matching:
             advance_line(screen)
-            fit_output(screen, prompts["bip39_passphrase_mismatch"])
+            fit_err_output(screen, prompts["bip39_passphrase_mismatch"])
             advance_line(screen)
     return phrase
 
