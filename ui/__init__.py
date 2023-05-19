@@ -222,12 +222,21 @@ def read_words(screen: Screen, biplen: int) -> List[str]:
     return words
 
 
-def _endscreen(screen: Screen, sd: SeedDerivation, bippass: bool) -> None:
+def _endscreen(screen: Screen,
+               sd: SeedDerivation,
+               bip39_phrase: str,
+               has_pass: bool) -> None:
+    screen.addstr("\n")
+    fit_output(screen, prompts["bip39_mnem"])
+    screen.addstr("\n\n")
+    fit_output(screen, bip39_phrase)
+    screen.addstr("\n")
+    screen.addstr("Passphrase: " + bool_to_yesno(has_pass))
+    screen.addstr("\n\n")
     screen.addstr(prompts["monero_mnem"])
     screen.addstr("\n\n")
     fit_output(screen, sd.electrum_words)
     screen.addstr("\n\n")
-    screen.addstr("Passphrase: " + bool_to_yesno(bippass))
     wait_enter(screen, "end")
 
 
@@ -274,14 +283,9 @@ def program(screen: Screen) -> bool:
     if bippass:
         passphrase = read_passphrase(screen)
 
-    screen.clear()
-    screen.addstr("\n")
-    fit_output(screen, prompts["bip39_mnem"])
-    screen.addstr("\n\n")
-    fit_output(screen, bip39_phrase)
-    screen.addstr("\n\n")
     sd = SeedDerivation.derive_monero(bip39_phrase, passphrase)
-    _endscreen(screen, sd, bippass)
+    screen.clear()
+    _endscreen(screen, sd, bip39_phrase, bippass)
 
 
 def bye():
