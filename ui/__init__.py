@@ -16,6 +16,7 @@ from util.screen import (
     bool_to_yesno,
     fit_output,
     fit_err_output,
+    fit_info_output,
     break_output,
     check_dimensions,
     setup_colors,
@@ -211,11 +212,11 @@ def _endscreen(screen: Screen,
                bip39_phrase: str,
                has_pass: bool) -> None:
     screen.addstr("\n")
-    fit_output(screen, prompts["bip39_mnem"])
+    fit_info_output(screen, prompts["bip39_mnem"])
     screen.addstr("\n\n")
-    fit_output(screen, bip39_phrase)
+    fit_info_output(screen, bip39_phrase)
     screen.addstr("\n")
-    screen.addstr("Passphrase: " + bool_to_yesno(has_pass))
+    write_info(screen, "Passphrase: " + bool_to_yesno(has_pass))
     screen.addstr("\n\n")
     screen.addstr(prompts["monero_mnem"])
     screen.addstr("\n\n")
