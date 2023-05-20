@@ -4,6 +4,8 @@
 
 Convert your English BIP39 mnemonic into a 25-word Monero mnemonic according to the SLIP-0010 standard.
 
+⚠️ WARNING ⚠️ Your mnemonic is valuable information, enter it only if you absolutely need to and you know what you are doing. (For example, recovering a Trezor Monero wallet without a Trezor, or converting a BIP85 child mnemonic.) Ask a friend if unsure. Use this program only on a computer you trust and disconnect it from the internet.
+
 ### Dev setup
 
 #### prerequisites

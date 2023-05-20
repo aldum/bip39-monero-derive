@@ -30,13 +30,19 @@ if get_debug():
     DEBUG = True
 
 version = '0.1.0'
+_tagline = 'Convert your English BIP39 mnemonic into a 25-word Monero mnemonic according to SLIP10.'
+_quit_notice = 'You can quit any time by pressing Escape.'
+_warning = 'WARNING: Make sure you understand why you are doing this. Consult README.md before you continue.'
+_git_url = 'https://github.com/aldum/bip39-monero-derive'
 
 _initPrompt = f"""BIP39-Monero Mnemonic Converter v{version}
 
-Convert your English BIP39 mnemonic into a 25-word Monero mnemonic according to SLIP10.
-You can quit any time by pressing Escape.
+{_tagline}
+{_quit_notice}
 
-https://github.com/aldum/bip39-monero-derive
+{_warning}
+
+{_git_url}
 """
 _bip39_length = "How many words are in your BIP39 mnemonic?"
 
