@@ -19,12 +19,12 @@ def fit_output(screen: Screen, s: str) -> None:
 
 
 def fit_err_output(screen: Screen, s: str) -> None:
-    text = break_output(screen, s)
+    text = break_output_screen(screen, s)
     write_err(screen, text)
 
 
 def fit_info_output(screen: Screen, s: str) -> None:
-    text = break_output(screen, s)
+    text = break_output_screen(screen, s)
     write_info(screen, text)
 
 
@@ -38,9 +38,7 @@ def advance_line(screen: Screen):
     screen.addstr(ny, 0, '')
 
 
-def break_output(screen: Screen, s: str) -> str:
-    # assuming full line as target
-    (_, mx) = screen.getmaxyx()
+def break_output(s: str, mx: int = 70) -> str:
     words = s.split(' ')
     broken = []
     line = ''
@@ -54,6 +52,12 @@ def break_output(screen: Screen, s: str) -> str:
             line = w
     broken.append(line.strip())
     return '\n'.join(broken)
+
+
+def break_output_screen(screen: Screen, s: str) -> str:
+    # assuming full line as target
+    (_, mx) = screen.getmaxyx()
+    return break_output(s, mx - 1)
 
 
 def check_dimensions(screen: Screen) -> bool:
