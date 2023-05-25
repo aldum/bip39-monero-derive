@@ -5,7 +5,10 @@ from bip39 import (
     Bip39WordsNum,
     validate_checksum,
 )
-from util.debug import set_debug_screen, get_debug
+from util.debug import (
+    get_debug,
+    set_debug_screen,
+)
 from typing import (
     Dict,
     List,
@@ -209,22 +212,21 @@ def read_words(screen: Screen, biplen: int) -> List[str]:
     words: List[str] = []
     for n in range(1, biplen + 1):
         word_valid: bool = False
-        word_prefix: bool = False
         full_word: str = ''
         while not word_valid:
             prompt: str = _bip39_word(n, biplen)
             word: str = read_word(screen, prompt)
-            if len(word) <= wordlist.unique_prefix_length and word in wordlist.unique_prefixes:
-                full_word = wordlist.unique_prefixes[word]
-                word_prefix = True
-            else:
-                full_word = word
-            word_valid = wordlist.contains(full_word)
+            word_valid = wordlist.contains(word)
             if not word_valid:
-                screen.addstr(' ')
-                write_err(screen, _bip39_word_invalid(word))
-            if word_prefix:
-                write_info(screen, f' ({full_word})')
+                entered_len: int = len(word)
+                pfx_lte: bool = entered_len <= wordlist.unique_prefix_length
+                if pfx_lte and word in wordlist.unique_prefixes:
+                    full_word = wordlist.unique_prefixes[word]
+                    write_info(screen, f' ({full_word})')
+                    word_valid = True
+                else:
+                    screen.addstr(' ')
+                    write_err(screen, _bip39_word_invalid(word))
             advance_line(screen)
 
         words.append(''.join(full_word))
@@ -272,11 +274,10 @@ def program(screen: Screen) -> bool:
             # bip39_phrase: str = ' '.join(["bacon"] * biplen)
             # words: List[str] = ["bacon"] * biplen
             # 'coach someone found provide arch ritual outside spike unit enter margin warm'
-            mnem = 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about'  # noqa: E501 # pylint: disable=C0301
+            mnem = 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about' # noqa: E501 # pylint: disable=C0301
             words: List[str] = mnem.split(' ')
         else:
             words = read_words(screen, biplen)
-        mnem_valid = True
         mnem_valid = validate_checksum(words, biplen)
         if not mnem_valid:
             write_err(screen, f"{prompts['bip39_invalid']}")
