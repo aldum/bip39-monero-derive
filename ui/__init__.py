@@ -17,7 +17,7 @@ from util.screen import (
     fit_output,
     fit_err_output,
     fit_info_output,
-    break_output,
+    break_output_screen,
     check_dimensions,
     setup_colors,
     write_err,
@@ -30,25 +30,15 @@ if get_debug():
     DEBUG = True
 
 version = '0.1.0'
-_tagline = 'Convert your English BIP39 mnemonic into a 25-word Monero mnemonic according to SLIP10.'
-_quit_notice = 'You can quit any time by pressing Escape.'
-_warning = 'WARNING: Make sure you understand why you are doing this. Consult README.md before you continue.'
-_git_url = 'https://github.com/aldum/bip39-monero-derive'
-
-_initPrompt = f"""BIP39-Monero Mnemonic Converter v{version}
-
-{_tagline}
-{_quit_notice}
-
-{_warning}
-
-{_git_url}
-"""
-_bip39_length = "How many words are in your BIP39 mnemonic?"
 
 prompts = {
     "anykey": "Press any key to contine.",
-    "bip39_length": f"""{_initPrompt}\n\n{_bip39_length}""",
+    "blurb": f"BIP39-Monero Mnemonic Converter v{version}",
+    "tagline": 'Convert your English BIP39 mnemonic into a 25-word Monero mnemonic according to SLIP10.', # noqa: E501
+    "quit_notice": 'You can quit any time by pressing Escape.',
+    "warning": 'WARNING: Make sure you understand why you are doing this. Consult the README.md before you continue.', # noqa: E501
+    "git_url": 'https://github.com/aldum/bip39-monero-derive/blob/master/README.md',
+    "bip39_length": "How many words are in your BIP39 mnemonic?",
     "bip39_info": 'Full and shortened BIP39 words (first four letters) are both accepted.',
     "bip39_word": lambda n, s: f"Enter word #{n:02}/{s}: ",
     "bip39_word_invalid": lambda w = '': f"Invalid word. Try again. ({w})",
@@ -66,6 +56,21 @@ prompts = {
     "nuke": "Esc pressed, exiting.",
     "end": "If you are done, press enter to quit. All data will be erased.",
 }
+
+def _break(screen: Screen, s: str) -> str:
+    return break_output_screen(screen, s)
+
+def _get_initial_prompt(screen: Screen) -> str:
+    return f"""{prompts['blurb']}
+
+{_break(screen, prompts['tagline'])}
+{_break(screen, prompts['quit_notice'])}
+
+{_break(screen, prompts['warning'])}
+{prompts['git_url']}
+
+
+{prompts['bip39_length']}"""
 
 options = {
     "bip39_length": list(map(int, Bip39WordsNum)),
@@ -104,11 +109,13 @@ def wait(screen: Screen):
 def picker(screen: Screen, key: str):
     return _picker(screen, options[key], prompts[key])
 
+def picker_prompt(screen: Screen, optsKey: str, prompt: str):
+    return _picker(screen, options[optsKey], prompt)
+
 
 def _picker(screen: Screen, opts: List[str], prompt: str):
     # selected, ind = pick(options[key], prompts[key], "=>", screen)
-    ps = break_output(screen, prompt)
-    ret = pick(opts, ps, indicator="=>",
+    ret = pick(opts, prompt, indicator="=>",
                screen=screen, wraparaound=False)
     if ret is None:
         raise KeyboardInterrupt
@@ -242,7 +249,8 @@ def program(screen: Screen) -> bool:
     if DEBUG:
         biplen = 12
     else:
-        biplen = picker(screen, "bip39_length")
+        prompt = _get_initial_prompt(screen)
+        biplen = picker_prompt(screen, "bip39_length", prompt)
 
     screen.clear()
     mnem_valid = False

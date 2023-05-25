@@ -15,7 +15,7 @@ def bool_to_yesno(b: bool) -> str:
 
 
 def fit_output(screen: Screen, s: str) -> None:
-    screen.addstr(break_output(screen, s))
+    screen.addstr(break_output_screen(screen, s))
 
 
 def fit_err_output(screen: Screen, s: str) -> None:
