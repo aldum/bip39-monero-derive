@@ -6,7 +6,11 @@ from bip39 import (
     validate_checksum,
 )
 from util.debug import set_debug_screen, get_debug
-from typing import List, Optional
+from typing import (
+    Dict,
+    List,
+    Optional,
+)
 
 from ui.input import Input, Screen
 from ui.pick import pick
@@ -29,9 +33,17 @@ DEBUG: bool = False
 if get_debug():
     DEBUG = True
 
+
 version = '0.1.0'
 
-prompts = {
+
+def _bip39_word(n: int, s: int) -> str:
+    return f"Enter word #{n:02}/{s}: "
+
+def _bip39_word_invalid(w: str) -> str:
+    return f"Invalid word. Try again. ({w})"
+
+prompts: Dict[str, str] = {
     "anykey": "Press any key to contine.",
     "blurb": f"BIP39-Monero Mnemonic Converter v{version}",
     "tagline": 'Convert your English BIP39 mnemonic into a 25-word Monero mnemonic according to SLIP10.', # noqa: E501
@@ -40,8 +52,6 @@ prompts = {
     "git_url": 'https://github.com/aldum/bip39-monero-derive/blob/master/README.md',
     "bip39_length": "How many words are in your BIP39 mnemonic?",
     "bip39_info": 'Full and shortened BIP39 words (first four letters) are both accepted.',
-    "bip39_word": lambda n, s: f"Enter word #{n:02}/{s}: ",
-    "bip39_word_invalid": lambda w = '': f"Invalid word. Try again. ({w})",
     "bip39_invalid": "Invalid mnemonic. Try again. ",
     "bip39_valid": "Mnemonic OK. ",
     "bip39_mnem": "Your BIP39 mnemonic: ",
@@ -63,17 +73,17 @@ def _break(screen: Screen, s: str) -> str:
 def _get_initial_prompt(screen: Screen) -> str:
     return f"""{prompts['blurb']}
 
-{_break(screen, prompts['tagline'])}
-{_break(screen, prompts['quit_notice'])}
+{_break(screen, f"{prompts['tagline']}")}
+{_break(screen, f"{prompts['quit_notice']}")}
 
-{_break(screen, prompts['warning'])}
+{_break(screen, f"{prompts['warning']}")}
 {prompts['git_url']}
 
 
 {prompts['bip39_length']}"""
 
-options = {
-    "bip39_length": list(map(int, Bip39WordsNum)),
+options: Dict[str, List[str]] = {
+    "bip39_length": list(map(str, map(int, Bip39WordsNum))),
     "bip39_passphrase?": ["Yes", "No"],
 }
 
@@ -85,18 +95,18 @@ def validate(c: str) -> bool:
 def wait_msg(screen: Screen, prompt: Optional[str] = None):
     if prompt is not None:
         screen.addstr("\n\n")
-        screen.addstr(prompts[prompt] + "\n")
+        screen.addstr(f"{prompts[prompt]}\n")
     screen.getch()
 
 
 def wait_enter(screen: Screen, prompt: str):
     screen.addstr("\n\n")
-    fit_output(screen, prompts[prompt])
+    fit_output(screen, f"{prompts[prompt]}")
     word_entered = False
     while not word_entered:
         try:
             key = Input.read_input(screen)
-            if key.is_enter() or key.is_Esc():
+            if key and (key.is_enter() or key.is_Esc()):
                 word_entered = True
         except AttributeError:
             pass
@@ -106,14 +116,14 @@ def wait(screen: Screen):
     wait_msg(screen, "anykey")
 
 
-def picker(screen: Screen, key: str):
-    return _picker(screen, options[key], prompts[key])
+def picker(screen: Screen, key: str) -> str:
+    return _picker(screen, options[key], f"{prompts[key]}")
 
-def picker_prompt(screen: Screen, optsKey: str, prompt: str):
+def picker_prompt(screen: Screen, optsKey: str, prompt: str) -> str:
     return _picker(screen, options[optsKey], prompt)
 
 
-def _picker(screen: Screen, opts: List[str], prompt: str):
+def _picker(screen: Screen, opts: List[str], prompt: str) -> str:
     # selected, ind = pick(options[key], prompts[key], "=>", screen)
     ret = pick(opts, prompt, indicator="=>",
                screen=screen, wraparaound=False)
@@ -128,16 +138,17 @@ def read_passphrase(screen: Screen) -> str:
     matching = False
     while not matching:
         phrase = read_word(screen,
-                           prompts["bip39_input_passphrase"],
+                           f"{prompts['bip39_input_passphrase']}",
                            passw=True)
         advance_line(screen)
         confirm = read_word(screen,
-                            prompts["bip39_confirm_passphrase"],
+                            f"{prompts['bip39_confirm_passphrase']}",
                             passw=True)
         matching = phrase == confirm
         if not matching:
             advance_line(screen)
-            fit_err_output(screen, prompts["bip39_passphrase_mismatch"])
+            fit_err_output(screen,
+                            f"{prompts['bip39_passphrase_mismatch']}")
             advance_line(screen)
     return phrase
 
@@ -172,9 +183,9 @@ def read_word(screen: Screen, prompt: str,
             raise KeyboardInterrupt
         if key.isalpha:
             if validate(key.char):
-                char = key.char
+                char = key.char or ''
                 if not passw:
-                    char = key.char.lower()
+                    char = (char or '').lower()
                 add_char(char)
         if key.is_enter():
             word_entered = True
@@ -193,7 +204,7 @@ def read_word(screen: Screen, prompt: str,
 
 
 def read_words(screen: Screen, biplen: int) -> List[str]:
-    fit_output(screen, prompts["bip39_info"])
+    fit_output(screen, f"{prompts['bip39_info']}")
     screen.addstr("\n\n")
     words: List[str] = []
     for n in range(1, biplen + 1):
@@ -201,7 +212,8 @@ def read_words(screen: Screen, biplen: int) -> List[str]:
         word_prefix: bool = False
         full_word: str = ''
         while not word_valid:
-            word: str = read_word(screen, prompts["bip39_word"](n, biplen))
+            prompt: str = _bip39_word(n, biplen)
+            word: str = read_word(screen, prompt)
             if len(word) <= wordlist.unique_prefix_length and word in wordlist.unique_prefixes:
                 full_word = wordlist.unique_prefixes[word]
                 word_prefix = True
@@ -210,7 +222,7 @@ def read_words(screen: Screen, biplen: int) -> List[str]:
             word_valid = wordlist.contains(full_word)
             if not word_valid:
                 screen.addstr(' ')
-                write_err(screen, prompts["bip39_word_invalid"](word))
+                write_err(screen, _bip39_word_invalid(word))
             if word_prefix:
                 write_info(screen, f' ({full_word})')
             advance_line(screen)
@@ -225,13 +237,13 @@ def _endscreen(screen: Screen,
                bip39_phrase: str,
                has_pass: bool) -> None:
     screen.addstr("\n")
-    fit_info_output(screen, prompts["bip39_mnem"])
+    fit_info_output(screen, f"{prompts['bip39_mnem']}")
     screen.addstr("\n\n")
     fit_info_output(screen, bip39_phrase)
     screen.addstr("\n\n")
     write_info(screen, "Passphrase: " + bool_to_yesno(has_pass))
     screen.addstr("\n\n")
-    screen.addstr(prompts["monero_mnem"])
+    screen.addstr(f"{prompts['monero_mnem']}")
     screen.addstr("\n\n")
     fit_output(screen, sd.electrum_words)
     screen.addstr("\n\n")
@@ -247,10 +259,10 @@ def program(screen: Screen) -> bool:
     screen.clear()
 
     if DEBUG:
-        biplen = 12
+        biplen = Bip39WordsNum(12)
     else:
         prompt = _get_initial_prompt(screen)
-        biplen = picker_prompt(screen, "bip39_length", prompt)
+        biplen = Bip39WordsNum(int(picker_prompt(screen, "bip39_length", prompt)))
 
     screen.clear()
     mnem_valid = False
@@ -267,10 +279,10 @@ def program(screen: Screen) -> bool:
         mnem_valid = True
         mnem_valid = validate_checksum(words, biplen)
         if not mnem_valid:
-            write_err(screen, prompts["bip39_invalid"])
+            write_err(screen, f"{prompts['bip39_invalid']}")
             screen.addstr("\n")
         else:
-            write_ok(screen, prompts["bip39_valid"])
+            write_ok(screen, f"{prompts['bip39_valid']}")
 
     bip39_phrase = ' '.join(words)
 
@@ -283,6 +295,8 @@ def program(screen: Screen) -> bool:
     sd = SeedDerivation.derive_monero(bip39_phrase, passphrase)
     screen.clear()
     _endscreen(screen, sd, bip39_phrase, bippass)
+
+    return True
 
 
 def bye():

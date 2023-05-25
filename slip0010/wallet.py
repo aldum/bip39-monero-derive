@@ -3,8 +3,8 @@ import hmac
 from hashlib import sha512
 from binascii import hexlify, unhexlify
 
-from ecdsa import SECP256k1, SigningKey
-from ecdsa.ellipticcurve import Point
+from ecdsa import SECP256k1, SigningKey # type: ignore
+from ecdsa.ellipticcurve import Point # type: ignore
 
 
 from util import memoize, IntegerUtils, hash160, err_print

@@ -147,7 +147,7 @@ class Picker(Generic[OPTION_T]):
 
     def run_loop(
         self, screen: "curses._CursesWindow"
-    ) -> Union[List[PICK_RETURN_T], PICK_RETURN_T]:
+    ) -> Union[List[PICK_RETURN_T], PICK_RETURN_T, None]:
         while True:
             self.draw(screen)
             c = screen.getch()

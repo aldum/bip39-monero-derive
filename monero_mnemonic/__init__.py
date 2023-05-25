@@ -1,8 +1,8 @@
 from enum import IntEnum, unique
-from typing import List, Literal
-from binascii import crc32, hexlify, unhexlify
+from typing import List, Literal, Union
+from binascii import crc32, hexlify
 
-from util import IntegerUtils, BytesUtils, err_print
+from util import IntegerUtils, BytesUtils
 from .data import wordlist
 
 n = wordlist.WORDS_LIST_NUM
@@ -102,10 +102,10 @@ def encode(entropy_bytes: bytes) -> List[str]:
         ValueError: If bytes length is not valid
     """
     # Check entropy length
-    entropy_byte_len = len(entropy_bytes)
+    entropy_byte_len = bytes(len(entropy_bytes))
     if not _is_valid_entropy_len(entropy_byte_len):
         raise ValueError(
-            f"Entropy byte length ({entropy_byte_len}) is not valid")
+            f"Entropy byte length ({entropy_byte_len!r}) is not valid")
 
     # Consider 4 bytes at a time, 4 bytes represent 3 words
     mnemonic = []
@@ -144,14 +144,14 @@ def encode_int(seed: int) -> List[str]:
 
 def decode(phrase: List[str]) -> str:
     """Calculate hexadecimal representation of the phrase."""
-    phrase = phrase.split(" ")
+    # phrase = phrase.split(" ")
     out = ""
 
     for i in range(len(phrase) // 3):
         word1, word2, word3 = phrase[3 * i: 3 * i + 3]
-        w1 = wordlist.get_word_idx(word1)
-        w2 = wordlist.get_word_idx(word2) % n
-        w3 = wordlist.get_word_idx(word3) % n
+        w1 = wordlist.get_word_idx_unsafe(word1)
+        w2 = wordlist.get_word_idx_unsafe(word2) % n
+        w3 = wordlist.get_word_idx_unsafe(word3) % n
         x = w1 + n * ((w2 - w1) % n) + n * \
             n * ((w3 - w2) % n)
         # out += f"%08{x}"
@@ -167,12 +167,12 @@ def endian_swap(word: str) -> str:
     return "".join([word[i: i + 2] for i in [6, 4, 2, 0]])
 
 
-def get_checksum(phrase: List[str]):
+def get_checksum(phrase_split: List[str]) -> str:
     """Given a mnemonic word string, return a string of the computed checksum.
 
     :rtype: str
     """
-    phrase_split = phrase.split(" ")
+
     if len(phrase_split) < 12:
         raise ValueError("Invalid mnemonic phrase")
     if len(phrase_split) > 13:
@@ -182,7 +182,7 @@ def get_checksum(phrase: List[str]):
         # MyMonero format
         phrase = phrase_split[:12]
     wstr = "".join(word[: wordlist.unique_prefix_length] for word in phrase)
-    wstr = bytearray(wstr.encode("utf-8"))
-    z = ((crc32(wstr) & 0xFFFFFFFF) ^ 0xFFFFFFFF) >> 0
+    wstr_bytes = bytearray(wstr.encode("utf-8"))
+    z = ((crc32(wstr_bytes) & 0xFFFFFFFF) ^ 0xFFFFFFFF) >> 0
     z2 = ((z ^ 0xFFFFFFFF) >> 0) % len(phrase)
     return phrase_split[z2]

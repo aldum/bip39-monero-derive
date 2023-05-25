@@ -6,10 +6,15 @@ import hmac
 import struct
 import unicodedata
 from enum import IntEnum, unique
-from typing import List, Optional
+from typing import List
 from functools import reduce
 
-from util import *
+from util import (
+    to_bytes,
+    strxor,
+    BytesUtils,
+    IntegerUtils,
+)
 from bip39.data import wordlist
 
 
@@ -81,11 +86,13 @@ def PBKDF2(password, salt, dkLen=16, count=1000, prf=None) -> bytes:
 
 def validate_checksum(seed: List[str], n_words: Bip39WordsNum) -> bool:
     # __MnemonicToBinaryStr
-    mnemonic_bin_str = map(lambda word:
-                           IntegerUtils.to_binary_str(
-                               wordlist.get_word_idx(word), WORD_BIT_LEN),
-                           seed)
-    mnemonic_bin_str: str = ''.join(mnemonic_bin_str)
+    def get_bytes(word: str) -> str:
+        wOpt = wordlist.get_word_idx_option(word)
+        if wOpt:
+            return IntegerUtils.to_binary_str(wOpt, WORD_BIT_LEN)
+        return ''
+    mnemonic_bin_str_m = map(get_bytes, seed)
+    mnemonic_bin_str: str = ''.join(mnemonic_bin_str_m)
 
     checksum_len: int = Bip39WordsNum(n_words).get_checksum_len()
     checksum_bin_str = mnemonic_bin_str[-checksum_len:]
@@ -101,7 +108,6 @@ def validate_checksum(seed: List[str], n_words: Bip39WordsNum) -> bool:
     digest = dig.digest()
     digest_size = dig.digest_size
     entropy_hash_bin_str = BytesUtils.to_binary_str(digest, digest_size * 8)
-    #   return
 
     checksum_bin_str_computed = entropy_hash_bin_str[:checksum_len]
 

@@ -6,6 +6,7 @@ from . import Screen
 
 __DBG_SCREEN: Screen
 
+DEBUG: bool
 
 def get_debug():
     dbg = os.environ.get('DEBUG')

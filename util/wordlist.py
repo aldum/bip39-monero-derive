@@ -1,9 +1,14 @@
-from typing import Optional
+from typing import (
+    Any,
+    Optional,
+    Dict,
+    List,
+)
 from functools import reduce
 
-
 class Singleton(type):
-    _instances = {}
+    # TODO proper self type
+    _instances: Dict[Any, Any] = {}
 
     def __call__(cls, *args, **kwargs):
         if cls not in cls._instances:
@@ -13,12 +18,12 @@ class Singleton(type):
 
 
 class Wordlist:
-    wordlist = []
+    wordlist: List[str] = []
     WORDS_LIST_NUM: int = 0
     MAX_WORDLEN = 0
-    m_words_to_idx = {}
-    unique_prefix_length = 0
-    unique_prefixes = {}
+    m_words_to_idx: Dict[str, int] = {}
+    unique_prefix_length: int = 0
+    unique_prefixes: Dict[str, str] = {}
 
     def __init__(self):
         n = len(self.wordlist)
@@ -35,11 +40,14 @@ class Wordlist:
     def __getitem__(self, key):
         return self.wordlist[key]
 
-    def get_word_idx(self, word: str) -> Optional[int]:
+    def get_word_idx_option(self, word: str) -> Optional[int]:
         try:
             return self.m_words_to_idx[word]
         except KeyError:
             return None
 
+    def get_word_idx_unsafe(self, word: str) -> int:
+        return self.get_word_idx_option(word) or self.MAX_WORDLEN + 1
+
     def contains(self, word: str) -> bool:
-        return self.get_word_idx(word) is not None
+        return self.get_word_idx_option(word) is not None
