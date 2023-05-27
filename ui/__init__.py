@@ -217,7 +217,11 @@ def read_words(screen: Screen, biplen: int) -> List[str]:
         while not word_valid:
             prompt: str = _bip39_word(n, biplen)
             word: str = read_word(screen, prompt)
-            if len(word) <= wordlist.unique_prefix_length and word in wordlist.unique_prefixes:
+
+            # TODO clean this up
+            if (len(word) == wordlist.unique_prefix_length and
+                            word in wordlist.unique_prefixes and
+                            not wordlist.contains(full_word)):
                 full_word = wordlist.unique_prefixes[word]
                 word_prefix = True
             else:
