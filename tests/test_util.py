@@ -1,6 +1,6 @@
 import unittest
 
-import Crypto.Util.strxor as ref
+import Crypto.Util.strxor as ref # type: ignore
 
 from util import strxor
 

@@ -34,30 +34,22 @@ import hashlib
 import operator
 import sys
 
+from typing import List, Any
+
 __version__ = "1.0.dev0"
 
 
 # Useful for very coarse version differentiation.
 PY3 = sys.version_info[0] == 3
 
-if PY3:
-    indexbytes = operator.getitem
-    intlist2bytes = bytes
-    int2byte = operator.methodcaller("to_bytes", 1, "big")
-else:
-    int2byte = chr
-    range = xrange
-
-    def indexbytes(buf, i):
-        return ord(buf[i])
-
-    def intlist2bytes(l):
-        return b"".join(chr(c) for c in l)
+indexbytes = operator.getitem
+intlist2bytes = bytes
+int2byte = operator.methodcaller("to_bytes", 1, "big")
 
 
 b = 256
 q = 2 ** 255 - 19
-l = 2 ** 252 + 27742317777372353535851937790883648493
+l = 2 ** 252 + 27742317777372353535851937790883648493 # noqa: E741
 
 
 def H(m):
@@ -90,7 +82,7 @@ def inv(z):
 
 
 d = -121665 * inv(121666) % q
-I = pow(2, (q - 1) // 4, q)
+I = pow(2, (q - 1) // 4, q) # noqa: E741
 
 
 def xrecover(y):
@@ -166,7 +158,7 @@ def scalarmult(P, e):
 
 
 # Bpow[i] == scalarmult(B, 2**i)
-Bpow = []
+Bpow: List[Any] = []
 
 
 def make_Bpow():

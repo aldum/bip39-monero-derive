@@ -6,7 +6,7 @@ from slip0010 import keccak2
 
 b = 256
 q = 2 ** 255 - 19
-l = 2 ** 252 + 27742317777372353535851937790883648493
+l = 2 ** 252 + 27742317777372353535851937790883648493 # noqa: E741
 
 
 def _offset(x, offset=0):
@@ -206,7 +206,7 @@ def generate_keys(recovery_key):
     return recovery_key, pub
 
 
-def generate_monero_keys(seed: Sc25519) -> Tuple[Sc25519, Ge25519, Sc25519, Ge25519]:
+def generate_monero_keys(seed: Sc25519) -> Tuple[Sc25519, Ge25519]:
     """
     Generates spend key / view key from the seed in the same manner as Monero code does.
 

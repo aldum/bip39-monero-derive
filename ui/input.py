@@ -38,10 +38,12 @@ class Input:
             ch = got
             if isinstance(got, int):
                 ch = chr(got)
-            self.char = ch
+                self.char = ch
+            else:
+                self.char = got
             self.control = None
             if asc.isalpha(ch):
-                scr_debug_print(ch)
+                scr_debug_print(f"{ch!r}")
                 self.isalpha = True
         elif wide:
             ch = got

@@ -1,9 +1,8 @@
 import hmac
 from hashlib import sha512
-from binascii import hexlify, unhexlify
 from typing import Tuple, Union
 
-from util import BytesUtils, IntegerUtils, err_print
+from util import err_print
 
 
 def encode(data: Union[bytes, str],
@@ -38,7 +37,7 @@ def _x_recover(y: int) -> int:
     return x
 
 
-def derive_monero_master_key(seed: bytes) -> Tuple[int, bytes]:
+def derive_monero_master_key(seed: bytes) -> Tuple[bytes, bytes]:
     # def int_decode(b: bytes) -> int:
     #     return BytesUtils.to_integer(b, endianness="little")
 
@@ -83,8 +82,8 @@ def derive_monero_master_key(seed: bytes) -> Tuple[int, bytes]:
 
     curve = b'ed25519 seed'
     # seed = hexlify(seed)
-    err_print(f"in {type(seed)}, {seed}")
-    I = hmac.new(curve, msg=seed, digestmod=sha512).digest()
+    err_print(f"in {type(seed)!r}, {seed!r}")
+    I = hmac.new(curve, msg=seed, digestmod=sha512).digest() # noqa: E741
     key, chain_code = I[:32], I[32:]
     # I_L, chain_code = I[:32], I[32:]
     # err_print(f"I_L {I_L} {hexlify(I_L)}`")

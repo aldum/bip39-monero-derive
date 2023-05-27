@@ -3,12 +3,22 @@ import os
 import signal
 import hashlib
 from sys import stderr
-from typing import Union, Literal, Optional
+from typing import (
+    Any,
+    Union,
+    Literal,
+    Optional,
+    TYPE_CHECKING
+)
 from hashlib import sha256
 from binascii import unhexlify
 from functools import wraps
 
-Screen = 'curses._CursesWindow'
+if TYPE_CHECKING:
+    from _curses import _CursesWindow
+    Screen = _CursesWindow
+else:
+    Screen = Any
 
 
 def to_bytes(s: Union[bytes, bytearray, str, memoryview],
