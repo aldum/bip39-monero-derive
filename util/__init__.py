@@ -85,7 +85,7 @@ class IntegerUtils:
         return data_int.to_bytes(bytes_num, byteorder=endianness, signed=signed)
 
     @staticmethod
-    def from_binary_str(data: Union[bytes, str]) -> int:
+    def from_binary_str(data: str) -> int:
         """
         Convert the specified binary string to integer.
 
@@ -95,6 +95,8 @@ class IntegerUtils:
         Returns:
             int: Integer representation
         """
+        if data == '':
+            return 0
         return int(IntegerUtils.encode(data), 2)
 
     @staticmethod
@@ -104,7 +106,7 @@ class IntegerUtils:
             Convert the specified integer to a binary string.
 
             Args:
-                data_int (int)                  : Data integer
+                data_int (int)                  : Data integer (non-negative!)
                 zero_pad_bit_len (int, optional): Zero pad length in bits, 0 if not specified
 
             Returns:
