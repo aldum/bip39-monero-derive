@@ -5,7 +5,10 @@ from bip39 import (
     Bip39WordsNum,
     validate_checksum,
 )
-from util.debug import set_debug_screen, get_debug
+from util.debug import (
+    get_debug,
+    set_debug_screen,
+)
 from typing import (
     Dict,
     List,
@@ -272,11 +275,10 @@ def program(screen: Screen) -> bool:
             # bip39_phrase: str = ' '.join(["bacon"] * biplen)
             # words: List[str] = ["bacon"] * biplen
             # 'coach someone found provide arch ritual outside spike unit enter margin warm'
-            mnem = 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about'  # noqa: E501 # pylint: disable=C0301
+            mnem = 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about' # noqa: E501 # pylint: disable=C0301
             words: List[str] = mnem.split(' ')
         else:
             words = read_words(screen, biplen)
-        mnem_valid = True
         mnem_valid = validate_checksum(words, biplen)
         if not mnem_valid:
             write_err(screen, f"{prompts['bip39_invalid']}")
