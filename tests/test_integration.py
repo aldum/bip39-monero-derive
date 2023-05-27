@@ -3,6 +3,7 @@
 import unittest
 from unittest import TestCase
 from binascii import hexlify
+from typing import Any, List
 
 from util import err_print
 from tests.util import JSONUtils
@@ -10,7 +11,7 @@ from slip0010 import sd
 
 
 class TestUtils(TestCase):
-    test_data = []
+    test_data: List[Any] = []
 
     def __init__(self, test_name):
         super().__init__(test_name)

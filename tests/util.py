@@ -25,7 +25,7 @@ class JSONUtils:
         return data
 
     @staticmethod
-    def load_vectors_data(data: List[List[str]]) -> List[TestVector]:
+    def load_vectors_data(data: str) -> List[TestVector]:
         def to_vect(line):
             monero_mnem = None
             public_addr = None
