@@ -1,6 +1,6 @@
 # vi: set noet:
 
-BIN=.venv/bin/
+BIN=.venv/bin
 
 uname_S := $(shell sh -c 'uname -s 2>/dev/null || echo not')
 uname_M := $(shell sh -c 'uname -m 2>/dev/null || echo not')
@@ -30,15 +30,23 @@ clean:
 	rm -rf dist/*
 
 dist_exe: check_venv
-	$(BIN)pyinstaller -F derive.py $(UNI) -n derive-$(OS)-$(ARCH)
+	$(BIN)/pyinstaller -F derive.py $(UNI) -n derive-$(OS)-$(ARCH)
 
 dist_script: check_venv
-	$(BIN)stickytape derive.py \
+	$(BIN)/stickytape derive.py \
 		--add-python-path . \
 		--add-python-module 'importlib.machinery' \
-		--python-binary $(BIN)python \
+		--python-binary $(BIN)/python \
 		--output-file dist/prog.py
 
+dist_all: dist_exe dist_script
+
 check_venv:
-	test -f $(BIN)python
+	test -f $(BIN)/python
+
+create_venv:
+	python3.9 -m venv .venv
+	$(BIN)/pip install poetry
+	$(BIN)/poetry install
+
 
