@@ -19,10 +19,10 @@ class TestUtils(TestCase):
             'tests/test_vectors.json')
 
     def test_integration(self):
-        for l in self.test_data:
-            ent = l.entropy
-            mnem = l.monero_mnem
-            der = sd.SeedDerivation.derive_monero(l.bip39, l.passp)
+        for line in self.test_data:
+            ent = line.entropy
+            mnem = line.monero_mnem
+            der = sd.SeedDerivation.derive_monero(line.bip39, line.passp)
             err_print(
                 f"sd {hexlify(ent)}\n   {hexlify(der.master_seed)}")
             assert der.master_seed == ent

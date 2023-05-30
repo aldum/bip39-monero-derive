@@ -5,7 +5,7 @@ import unittest
 from typing import Any, Callable
 
 from ui import program
-import pyte # type: ignore
+import pyte  # type: ignore
 
 
 class TestUI(unittest.TestCase):
@@ -33,7 +33,7 @@ class TestUI(unittest.TestCase):
             for i in range(11):
                 os.write(f_d, str.encode("aban\n"))
             os.write(f_d, str.encode("abou\n"))
-            os.write(f_d, str.encode("j")) # picker down
+            os.write(f_d, str.encode("j"))  # picker down
             os.write(f_d, str.encode("\n"))
             while True:
                 try:
@@ -76,7 +76,7 @@ class TestUI(unittest.TestCase):
             for i in range(11):
                 os.write(f_d, str.encode("add\n"))
             os.write(f_d, str.encode("actor\n"))
-            os.write(f_d, str.encode("j")) # picker down
+            os.write(f_d, str.encode("j"))  # picker down
             os.write(f_d, str.encode("\n"))
             while True:
                 try:
