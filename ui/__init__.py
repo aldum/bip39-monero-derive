@@ -207,7 +207,6 @@ def read_word(screen: Screen, prompt: str,
 
 
 def read_words(screen: Screen, biplen: int) -> List[str]:
-    fit_output(screen, f"{prompts['bip39_info']}")
     screen.addstr("\n\n")
     words: List[str] = []
     for n in range(1, biplen + 1):
@@ -274,6 +273,7 @@ def program(screen: Screen) -> bool:
     screen.clear()
     mnem_valid = False
 
+    fit_output(screen, f"{prompts['bip39_info']}")
     while not mnem_valid:
         if DEBUG:
             # bip39_phrase: str = ' '.join(["bacon"] * biplen)
