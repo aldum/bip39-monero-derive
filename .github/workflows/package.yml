@@ -25,11 +25,11 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt install automake
-          python3 -m venv .venv
+          make create_venv
           source .venv/bin/activate
           pip3 install --upgrade pip
-          pip3 install ecdsa
-          pip3 install stickytape
+          pip3 install poetry
+          poetry install
           make dist_script
       - name: Upload artifact
         uses: actions/upload-artifact@v3
