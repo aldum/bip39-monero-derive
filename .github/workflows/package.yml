@@ -1,5 +1,8 @@
 name: Python package
 
+permissions:
+  contents: write
+
 env:
   ACTIONS_STEP_DEBUG: true
 
@@ -88,4 +91,4 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          files: artifacts/
+          files: artifacts/prog.py
