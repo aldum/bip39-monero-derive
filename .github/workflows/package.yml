@@ -83,6 +83,8 @@ jobs:
         run: |
           cd artifacts
           sha256sum * > SHA256SUMS
+      - name: control
+        run: ls artifacts/
       - name: Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
