@@ -52,7 +52,7 @@ create_venv:
 create_test_venv:
 	python3 -m venv .venv
 	$(BIN)/pip install poetry
-	$(BIN)/poetry install
+	$(BIN)/poetry install --with test
 
 actions:
 	act --artifact-server-path dist
