@@ -12,6 +12,28 @@ on:
       - ".github/workflows/package.yml"
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.10", "3.11"]
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Test
+        run: |
+          sudo apt install automake
+          make create_test_venv
+          source .venv/bin/activate
+          pip3 install --upgrade pip
+          pip3 install poetry
+          poetry install
+          pytest
+
   build-script:
     runs-on: ubuntu-latest
     strategy:
@@ -85,7 +107,7 @@ jobs:
       - name: Checksums
         run: |
           cd artifacts
-          sha256sum * > SHA256SUMS
+          sha256sum * > SHA256SUMS.txt
       - name: control
         run: ls artifacts/
       - name: Release
