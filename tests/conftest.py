@@ -6,3 +6,10 @@ def pytest_addoption(parser):
         default=False,
         help="Run utility equivalence tests",
     )
+
+    parser.addoption(
+        "--run-curses-test",
+        action="store_true",
+        default=False,
+        help="Run UI test",
+    )
