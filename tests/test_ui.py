@@ -1,13 +1,19 @@
 import os
 import curses
 import select
+import pytest
 import unittest
 from typing import Any, Callable
 
 from ui import program
 import pyte  # type: ignore
 
+uitest = pytest.mark.skipif(
+    "not config.getoption('--run-curses-test')",
+    reason="Only run when --run-curses-test is given",
+)
 
+@uitest
 class TestUI(unittest.TestCase):
 
     @staticmethod

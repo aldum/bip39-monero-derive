@@ -7,7 +7,7 @@ from ecdsa import SECP256k1, SigningKey # type: ignore
 from ecdsa.ellipticcurve import Point # type: ignore
 
 
-from util import memoize, IntegerUtils, hash160, err_print
+from util import memoize, IntegerUtils, hash160
 from slip0010 import ed25519 as crypto
 
 long_or_int = int
@@ -36,13 +36,13 @@ def is_hex_string(string):
     return pattern.match(string) is not None
 
 
-def long_to_hex(l, size):
+def long_to_hex(ln, size):
     """Encode a long value as a hex string, 0-padding to size.
     Note that size is the size of the resulting hex string. So, for a 32Byte
     long size should be 64 (two hex characters per byte"."""
     f_str = "{0:0%sx}" % size
     # f_str = f"{0:0{size}x}"
-    return ensure_bytes(f_str.format(l).lower())
+    return ensure_bytes(f_str.format(ln).lower())
 
 
 class Wallet:
@@ -129,7 +129,7 @@ class Wallet:
                 return val
             raise ValueError("Invalid parameter type")
 
-        def l(val) -> int:
+        def l(val) -> int: # noqa: E743
             if isinstance(val, int):
                 return long_or_int(val)
             if isinstance(val, (str, bytes)):
@@ -171,7 +171,7 @@ class Wallet:
         if use_ed25519:
             cv_seed = b"ed25519 seed"
 
-        I = hmac.new(cv_seed, msg=seed, digestmod=sha512).digest()
+        I = hmac.new(cv_seed, msg=seed, digestmod=sha512).digest() # noqa: E741
         # Split I into two 32-byte sequences, IL and IR.
         I_L, I_R = I[:32], I[32:]
         # Use IL as master secret key, and IR as master chain code.
@@ -330,7 +330,7 @@ class Wallet:
         # Compute a 64 Byte I that is the HMAC-SHA512, using self.chain_code
         # as the seed, and data as the message.
         # err_print(f"data: {data}")
-        I = hmac.new(
+        I = hmac.new( # noqa: E741
             unhexlify(self.chain_code),
             msg=unhexlify(data),
             digestmod=sha512

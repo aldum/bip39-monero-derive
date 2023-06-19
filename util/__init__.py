@@ -10,9 +10,9 @@ from typing import (
     Optional,
     TYPE_CHECKING
 )
-from hashlib import sha256
 from binascii import unhexlify
 from functools import wraps
+from .ripemd160 import RIPEMD160 # type: ignore
 
 if TYPE_CHECKING:
     from _curses import _CursesWindow
@@ -228,7 +228,15 @@ def memoize(f):
     return wraps(f)(_c)
 
 
-def hash160(data):
+def hash160_hashlib(data):
     """Return ripemd160(sha256(data))"""
-    rh = hashlib.new("ripemd160", sha256(data).digest())
-    return rh.digest()
+    dig = hashlib.sha256(data).digest()
+    rh = hashlib.new("ripemd160", dig).digest()
+    return rh
+
+
+def hash160(data):
+    dig = hashlib.sha256(data).digest()
+    msg = bytearray(dig)
+    rh = RIPEMD160().calculate_hash(msg)
+    return unhexlify(rh)
