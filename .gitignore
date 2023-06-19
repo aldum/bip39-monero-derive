@@ -1,9 +1,10 @@
 __pycache__/
 .idea/
 .history/
-.venv
+.venv*
 .pylintrc
 .vscode
 dist/
 build/
 *.spec
+.hypothesis/
