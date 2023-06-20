@@ -3,10 +3,7 @@ name: Python package
 permissions:
   contents: write
 
-on:
-  push:
-    tags:
-      - "*"
+on: push
 
 jobs:
   build-script:
@@ -121,6 +118,7 @@ jobs:
 
   release:
     runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
     needs:
       - build-script
       - build-linux-exe
