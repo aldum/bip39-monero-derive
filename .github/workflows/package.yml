@@ -84,6 +84,8 @@ jobs:
           poetry install --with dev
       - name: Dist
         run: make dist_exe
+      - name: control
+        run: ls dist/
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
@@ -110,6 +112,8 @@ jobs:
           pip install pyinstaller
       - name: Dist
         run: pyinstaller -F derive.py -n derive-win
+      - name: control
+        run: ls dist/
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
