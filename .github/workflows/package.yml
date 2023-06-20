@@ -117,7 +117,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
-          name: derive-win
+          name: derive-win.exe
           path: dist/
 
   release:
@@ -137,6 +137,14 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: derive-script
+          path: artifacts/
+      - uses: actions/download-artifact@v3
+        with:
+          name: derive-macos-universal
+          path: artifacts/
+      - uses: actions/download-artifact@v3
+        with:
+          name: derive-win.exe
           path: artifacts/
       - name: Checksums
         run: |
