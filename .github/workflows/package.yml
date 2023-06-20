@@ -3,13 +3,8 @@ name: Python package
 permissions:
   contents: write
 
-env:
-  ACTIONS_STEP_DEBUG: true
-
 on:
   push:
-    paths:
-      - ".github/workflows/package.yml"
     tags:
       - "*"
 
