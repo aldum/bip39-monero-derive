@@ -10,6 +10,8 @@ on:
   push:
     paths:
       - ".github/workflows/package.yml"
+    tags:
+      - "*"
 
 jobs:
   build-script:
@@ -124,7 +126,6 @@ jobs:
 
   release:
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/')
     needs:
       - build-script
       - build-linux-exe
