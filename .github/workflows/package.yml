@@ -1,9 +1,6 @@
 name: Python package
 
-permissions:
-  contents: write
-
-on: push
+on: [push, pull_request]
 
 jobs:
   build-script:
@@ -121,8 +118,11 @@ jobs:
           path: dist/
 
   release:
+    permissions:
+      id-token: write
+      contents: write
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/')
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
     needs:
       - build-script
       - build-linux-exe
@@ -146,10 +146,17 @@ jobs:
         with:
           name: derive-win.exe
           path: artifacts/
+      # - name: install cosign
+      #   uses: sigstore/cosign-installer@main
+      #   with:
+      #     cosign-release: "v2.0.2"
       - name: Checksums
         run: |
           cd artifacts
           sha256sum * > SHA256SUMS.txt
+      - uses: sigstore/gh-action-sigstore-python@v1.2.3
+        with:
+          inputs: artifacts/*
       - name: control
         run: ls artifacts/
       - name: Release
