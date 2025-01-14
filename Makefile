@@ -42,7 +42,7 @@ dist_script: check_venv
 dist_all: dist_exe dist_script
 
 check_venv:
-	test -f $(BIN)/python
+	@test -f $(BIN)/python || { echo 'Run `make create_venv` first!' ; exit 51; }
 
 create_venv:
 	python3.9 -m venv .venv
