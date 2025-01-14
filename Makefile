@@ -47,7 +47,7 @@ check_venv:
 create_venv:
 	python3.9 -m venv .venv
 	$(BIN)/pip install poetry
-	$(BIN)/poetry install
+	$(BIN)/poetry install --no-root
 
 create_test_venv:
 	python3 -m venv .venv
