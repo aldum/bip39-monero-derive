@@ -30,10 +30,10 @@ clean:
 	rm -rf dist/*
 
 dist_exe: check_venv
-	$(BIN)/pyinstaller -F derive.py $(UNI) -n derive-$(OS)-$(ARCH)
+	@$(BIN)/pyinstaller -F derive.py $(UNI) -n derive-$(OS)-$(ARCH)
 
 dist_script: check_venv
-	$(BIN)/stickytape derive.py \
+	@$(BIN)/stickytape derive.py \
 		--add-python-path . \
 		--add-python-module 'importlib.machinery' \
 		--python-binary $(BIN)/python \
