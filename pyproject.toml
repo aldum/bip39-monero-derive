@@ -5,6 +5,7 @@ description = "Standalone utility for deriving Monero mnemonic seeds from standa
 authors = ["aldum <aldum@artixlinux.org>"]
 license = "MIT"
 readme = "README.md"
+package-mode = false
 
 [tool.poetry.dependencies]
 python = ">=3.9,<3.12"
@@ -31,9 +32,7 @@ build-backend = "poetry.core.masonry.api"
 script = "bip39_monero_derive:main"
 
 [tool.pytest.ini_options]
-filterwarnings = [
-  "ignore::pytest.PytestCollectionWarning"
-]
+filterwarnings = ["ignore::pytest.PytestCollectionWarning"]
 
 [tool.ruff]
 line-length = 100
