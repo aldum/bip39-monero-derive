@@ -11,7 +11,7 @@ jobs:
         python-version: ["3.9"]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
@@ -27,7 +27,7 @@ jobs:
       - name: Dist
         run: make dist_script
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: derive-script
           path: dist/
@@ -55,7 +55,7 @@ jobs:
       - name: Dist
         run: make dist_exe
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: derive-linux
           path: dist/
@@ -67,7 +67,7 @@ jobs:
         python-version: ["3.11"]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
@@ -96,7 +96,7 @@ jobs:
         python-version: ["3.9"]
       fail-fast: false
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -129,20 +129,20 @@ jobs:
       - build-macos-exe
       - build-windows-exe
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/download-artifact@v3
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v5
         with:
           name: derive-linux
           path: artifacts/
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v5
         with:
           name: derive-script
           path: artifacts/
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v5
         with:
           name: derive-macos-universal
           path: artifacts/
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v5
         with:
           name: derive-win.exe
           path: artifacts/
@@ -154,7 +154,7 @@ jobs:
         run: |
           cd artifacts
           sha256sum * > SHA256SUMS.txt
-      - uses: sigstore/gh-action-sigstore-python@v1.2.3
+      - uses: sigstore/gh-action-sigstore-python@v3.0.1
         with:
           inputs: artifacts/*
       - name: control
