@@ -4,7 +4,6 @@ import bip39
 from slip0010.wallet import Wallet
 from slip0010 import ed25519 as crypto
 from monero_mnemonic import mn_encode
-from util import err_print
 
 DEFAULT_BIP44_PATH = "m/44'/128'/0'/0/0"
 DEFAULT_SLIP0010_PATH = "m/44'/128'/0'"

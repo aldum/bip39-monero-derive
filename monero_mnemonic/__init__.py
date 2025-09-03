@@ -1,5 +1,5 @@
 from enum import IntEnum, unique
-from typing import List, Literal, Union
+from typing import List, Literal
 from binascii import crc32, hexlify
 
 from util import IntegerUtils, BytesUtils
