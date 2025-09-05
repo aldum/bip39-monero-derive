@@ -16,22 +16,22 @@ class TestUtils(TestCase):
     def __init__(self, test_name):
         super().__init__(test_name)
         self.test_data = JSONUtils.load_vectors_from_file(
-            'tests/test_vectors.json')
+            "tests/test_vectors.json"
+        )
 
     def test_integration(self):
         for line in self.test_data:
             ent = line.entropy
             mnem = line.monero_mnem
             der = sd.SeedDerivation.derive_monero(line.bip39, line.passp)
-            err_print(
-                f"sd {hexlify(ent)}\n   {hexlify(der.master_seed)}")
+            err_print(f"sd {hexlify(ent)}\n   {hexlify(der.master_seed)}")
             assert der.master_seed == ent
             if mnem is not None:
                 # assert der.master_seed == gen_ent
                 mnem_words = der.electrum_words
-                assert mnem_words.split(' ') == mnem.split(' ')
+                assert mnem_words.split(" ") == mnem.split(" ")
         # assert 1 == 2
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

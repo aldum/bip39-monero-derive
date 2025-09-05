@@ -3,8 +3,8 @@ import hmac
 from hashlib import sha512
 from binascii import hexlify, unhexlify
 
-from ecdsa import SECP256k1, SigningKey # type: ignore
-from ecdsa.ellipticcurve import Point # type: ignore
+from ecdsa import SECP256k1, SigningKey  # type: ignore
+from ecdsa.ellipticcurve import Point  # type: ignore
 
 
 from util import memoize, IntegerUtils, hash160
@@ -117,7 +117,8 @@ class Wallet:
             and self.private_key.get_public_key() != self.public_key
         ):
             raise KeyMismatchError(
-                "Provided private and public values do not match")
+                "Provided private and public values do not match"
+            )
 
         def h(val, hex_len):
             if isinstance(val, int):
@@ -129,7 +130,7 @@ class Wallet:
                 return val
             raise ValueError("Invalid parameter type")
 
-        def l(val) -> int: # noqa: E743
+        def l(val) -> int:  # noqa: E743
             if isinstance(val, int):
                 return long_or_int(val)
             if isinstance(val, (str, bytes)):
@@ -149,10 +150,8 @@ class Wallet:
         self.child_number = l(child_number)
         self.chain_code = h(chain_code, 64)
 
-    @ classmethod
-    def from_master_secret(
-        cls, seed, use_ed25519=False, use_slip0010=False
-    ):
+    @classmethod
+    def from_master_secret(cls, seed, use_ed25519=False, use_slip0010=False):
         """Generate a new PrivateKey from a secret key.
         :param seed: The key to use to generate this wallet. It may be a long
             string. Do not use a phrase from a book or song, as that will
@@ -171,7 +170,7 @@ class Wallet:
         if use_ed25519:
             cv_seed = b"ed25519 seed"
 
-        I = hmac.new(cv_seed, msg=seed, digestmod=sha512).digest() # noqa: E741
+        I = hmac.new(cv_seed, msg=seed, digestmod=sha512).digest()  # noqa: E741
         # Split I into two 32-byte sequences, IL and IR.
         I_L, I_R = I[:32], I[32:]
         # Use IL as master secret key, and IR as master chain code.
@@ -236,7 +235,7 @@ class Wallet:
             return child.public_copy()
         return child
 
-    @ property
+    @property
     def identifier(self):
         """Get the identifier for this node.
         Extended keys can be identified by the Hash160 (RIPEMD160 after SHA256)
@@ -249,13 +248,13 @@ class Wallet:
         key = self.get_public_key_hex()
         return ensure_bytes(hexlify(hash160(unhexlify(key))))
 
-    @ property
+    @property
     def fingerprint(self):
         """The first 32 bits of the identifier are called the fingerprint."""
         # 32 bits == 4 Bytes == 8 hex characters
         return b"0x" + self.identifier[:8]
 
-    @ memoize
+    @memoize
     def get_child(self, child_number, is_prime=None, as_private=True):
         """Derive a child key.
         :param child_number: The number of the child key to compute
@@ -306,7 +305,8 @@ class Wallet:
 
         if not self.private_key and is_prime:
             raise ValueError(
-                "Cannot compute a prime child without a private key")
+                "Cannot compute a prime child without a private key"
+            )
 
         if is_prime:
             # Even though we take child_number as an int < boundary, the
@@ -323,17 +323,16 @@ class Wallet:
             data = self.get_public_key_hex()
             if self.use_ed25519:
                 raise InvalidPathError(
-                    "Ed25519 public derivation is not implemented")
+                    "Ed25519 public derivation is not implemented"
+                )
 
         data += child_number_hex
 
         # Compute a 64 Byte I that is the HMAC-SHA512, using self.chain_code
         # as the seed, and data as the message.
         # err_print(f"data: {data}")
-        I = hmac.new( # noqa: E741
-            unhexlify(self.chain_code),
-            msg=unhexlify(data),
-            digestmod=sha512
+        I = hmac.new(  # noqa: E741
+            unhexlify(self.chain_code), msg=unhexlify(data), digestmod=sha512
         ).digest()
         # Split I into its 32 Byte components.
         I_L, I_R = I[:32], I[32:]
@@ -347,7 +346,8 @@ class Wallet:
 
         if self.use_ed25519 and not self.private_key:
             raise InvalidPathError(
-                "Ed25519 public derivation is not implemented")
+                "Ed25519 public derivation is not implemented"
+            )
 
         if self.use_ed25519:
             private_key = Ed25519PrivateKey.from_hex_key(I_L)
@@ -437,7 +437,7 @@ class InfinityPointException(Exception):
     pass
 
 
-class Key():
+class Key:
     def __init__(self, compressed=False):
         """Construct a Key."""
         # Set network first because set_key needs it
@@ -468,7 +468,7 @@ class PrivateKey(Key):
         """Get the key - a hex formatted private exponent for the curve."""
         return ensure_bytes(hexlify(self._private_key.to_string()))
 
-    @ memoize
+    @memoize
     def get_public_key(self):
         """Get the PublicKey for this PrivateKey."""
         return PublicKey.from_verifying_key(
@@ -501,7 +501,7 @@ class Ed25519PrivateKey(PrivateKey):
     def get_public_key(self):
         return Ed25519PublicKey(crypto.scalarmult_base(self._key))
 
-    @ classmethod
+    @classmethod
     def from_hex_key(cls, key):
         return cls(hex_key=key)
 
@@ -544,13 +544,15 @@ class PublicKey(Key):
             compressed = self.compressed
         if compressed:
             parity = 2 + (self.y & 1)  # 0x02 even, 0x03 odd
-            return ensure_bytes(long_to_hex(parity, 2) + long_to_hex(self.x, 64))
+            return ensure_bytes(
+                long_to_hex(parity, 2) + long_to_hex(self.x, 64)
+            )
         else:
             return ensure_bytes(
                 b"04" + long_to_hex(self.x, 64) + long_to_hex(self.y, 64)
             )
 
-    @ classmethod
+    @classmethod
     def from_verifying_key(cls, verifying_key, **kwargs):
         return cls(verifying_key, **kwargs)
 
@@ -562,7 +564,7 @@ class Ed25519PublicKey(PublicKey):
     def get_key(self, compressed=None):
         return ensure_bytes(hexlify(crypto.encodepoint(self._key)))
 
-    @ classmethod
+    @classmethod
     def from_hex_key(cls, key):
         return cls(crypto.decodepoint(key))
 

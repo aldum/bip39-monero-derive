@@ -13,9 +13,9 @@ uitest = pytest.mark.skipif(
     reason="Only run when --run-curses-test is given",
 )
 
+
 @uitest
 class TestUI(unittest.TestCase):
-
     @staticmethod
     def _test_wrapper(test: Callable[[Any], Any]) -> None:
         pid, f_d = os.forkpty()
@@ -28,6 +28,7 @@ class TestUI(unittest.TestCase):
         def test(f_d):
             # screen = pyte.Screen(10, 20)
             self.assertRaises(AssertionError)
+
         self._test_wrapper(test)
 
     def test_tui(self):
@@ -43,8 +44,7 @@ class TestUI(unittest.TestCase):
             os.write(f_d, str.encode("\n"))
             while True:
                 try:
-                    [f_d], _, _ = select.select(
-                        [f_d], [], [], 1)
+                    [f_d], _, _ = select.select([f_d], [], [], 1)
                 except (KeyboardInterrupt, ValueError):
                     # either test was interrupted or the
                     # file descriptor of the child process
@@ -62,8 +62,7 @@ class TestUI(unittest.TestCase):
             #     print(line)
             l1: str = screen.display[11]
             l2: str = screen.display[12]
-            part1 = \
-                "alchemy apart fowls dexterity puck films liquid vigilant yesterday people awful"
+            part1 = "alchemy apart fowls dexterity puck films liquid vigilant yesterday people awful"
             part2 = "blender plywood"
             self.assertEqual(l1.strip(), part1)
             self.assertEqual(l2.strip(), part2)
@@ -86,8 +85,7 @@ class TestUI(unittest.TestCase):
             os.write(f_d, str.encode("\n"))
             while True:
                 try:
-                    [f_d], _, _ = select.select(
-                        [f_d], [], [], 1)
+                    [f_d], _, _ = select.select([f_d], [], [], 1)
                 except (KeyboardInterrupt, ValueError):
                     # either test was interrupted or the
                     # file descriptor of the child process
@@ -120,5 +118,5 @@ class TestUI(unittest.TestCase):
         self._test_wrapper(test)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

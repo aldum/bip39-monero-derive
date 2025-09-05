@@ -28,14 +28,14 @@ class Bip39WordsNum(IntEnum):
     WORDS_NUM_21 = 21
     WORDS_NUM_24 = 24
 
-    ''' |  ENT  | CS | ENT+CS |  MS  |
+    """ |  ENT  | CS | ENT+CS |  MS  |
         +-------+----+--------+------+
         |  128  |  4 |   132  |  12  |
         |  160  |  5 |   165  |  15  |
         |  192  |  6 |   198  |  18  |
         |  224  |  7 |   231  |  21  |
         |  256  |  8 |   264  |  24  |
-        '''
+        """
 
     def get_checksum_len(self) -> int:
         ms_to_cs = {
@@ -74,7 +74,7 @@ def PBKDF2(password, salt, dkLen=16, count=1000, prf=None) -> bytes:
     password = to_bytes(password)
     salt = to_bytes(salt)
 
-    key = b''
+    key = b""
     i = 1
     while len(key) < dkLen:
         s = [prf(password, salt + struct.pack(">I", i))] * 2
@@ -90,9 +90,10 @@ def validate_checksum(seed: List[str], n_words: Bip39WordsNum) -> bool:
         wOpt = wordlist.get_word_idx_option(word)
         if wOpt:
             return IntegerUtils.to_binary_str(wOpt, WORD_BIT_LEN)
-        return ''
+        return ""
+
     mnemonic_bin_str_m = map(get_bytes, seed)
-    mnemonic_bin_str: str = ''.join(mnemonic_bin_str_m)
+    mnemonic_bin_str: str = "".join(mnemonic_bin_str_m)
 
     checksum_len: int = Bip39WordsNum(n_words).get_checksum_len()
     checksum_bin_str = mnemonic_bin_str[-checksum_len:]
@@ -101,7 +102,8 @@ def validate_checksum(seed: List[str], n_words: Bip39WordsNum) -> bool:
     #       __EntropyBytesFromBinaryStr
     entropy_bin_str = mnemonic_bin_str[:-checksum_len]
     entropy_bytes = BytesUtils.from_binary_str(
-        entropy_bin_str, checksum_len * 8)
+        entropy_bin_str, checksum_len * 8
+    )
     #          return
     dig = sha256()
     dig.update(entropy_bytes)

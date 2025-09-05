@@ -222,7 +222,7 @@ class KeccakState(object):
 
         for y in self.rangeH:
             for x in self.rangeW:
-                self.s[x][y] ^= KeccakState.bytes2lane(bb[i: i + 8])
+                self.s[x][y] ^= KeccakState.bytes2lane(bb[i : i + 8])
                 i += 8
 
     def squeeze(self):
@@ -240,7 +240,7 @@ class KeccakState(object):
         for y in self.rangeH:
             for x in self.rangeW:
                 v = KeccakState.lane2bytes(self.s[x][y], self.lanew)
-                out[i: i + 8] = v
+                out[i : i + 8] = v
                 i += 8
         return out
 
@@ -252,7 +252,7 @@ class KeccakState(object):
         i = 0
         for y in self.rangeH:
             for x in self.rangeW:
-                self.s[x][y] = KeccakState.bytes2lane(bb[i: i + 8])
+                self.s[x][y] = KeccakState.bytes2lane(bb[i : i + 8])
                 i += 8
 
 
@@ -276,11 +276,12 @@ class KeccakSponge(object):
 
         while len(self.buffer) >= self.state.bitrate_bytes:
             self.absorb_block(self.buffer[: self.state.bitrate_bytes])
-            self.buffer = self.buffer[self.state.bitrate_bytes:]
+            self.buffer = self.buffer[self.state.bitrate_bytes :]
 
     def absorb_final(self):
-        padded = self.buffer + \
-            self.padfn(len(self.buffer), self.state.bitrate_bytes)
+        padded = self.buffer + self.padfn(
+            len(self.buffer), self.state.bitrate_bytes
+        )
         self.absorb_block(padded)
         self.buffer = []
 
@@ -296,17 +297,27 @@ class KeccakSponge(object):
         return Z[:l]
 
 
-class KeccakHash():
+class KeccakHash:
     """
     The Keccak hash function, with a hashlib-compatible interface.
     """
 
     def __init__(self, bitrate_bits, capacity_bits, output_bits):
         # our in-absorption sponge. this is never given padding
-        assert bitrate_bits + \
-            capacity_bits in (25, 50, 100, 200, 400, 800, 1600)
+        assert bitrate_bits + capacity_bits in (
+            25,
+            50,
+            100,
+            200,
+            400,
+            800,
+            1600,
+        )
         self.sponge = KeccakSponge(
-            bitrate_bits, bitrate_bits + capacity_bits, multirate_padding, keccak_f
+            bitrate_bits,
+            bitrate_bits + capacity_bits,
+            multirate_padding,
+            keccak_f,
         )
 
         # hashlib interface members
@@ -329,8 +340,10 @@ class KeccakHash():
 
     def reset(self):
         self.sponge = KeccakSponge(
-            self.bitrate_bits, self.bitrate_bits +
-            self.capacity_bits, multirate_padding, keccak_f
+            self.bitrate_bits,
+            self.bitrate_bits + self.capacity_bits,
+            multirate_padding,
+            keccak_f,
         )
 
     def update(self, s):

@@ -1,28 +1,23 @@
 """Utility functions"""
+
 import os
 import signal
 import hashlib
 from sys import stderr
-from typing import (
-    Any,
-    Union,
-    Literal,
-    Optional,
-    TYPE_CHECKING
-)
+from typing import Any, Union, Literal, Optional, TYPE_CHECKING
 from binascii import unhexlify
 from functools import wraps
-from .ripemd160 import RIPEMD160 # type: ignore
+from .ripemd160 import RIPEMD160  # type: ignore
 
 if TYPE_CHECKING:
     from _curses import _CursesWindow
+
     Screen = _CursesWindow
 else:
     Screen = Any
 
 
-def to_bytes(s: Union[bytes, bytearray, str, memoryview],
-             encoding="latin-1"):
+def to_bytes(s: Union[bytes, bytearray, str, memoryview], encoding="latin-1"):
     if isinstance(s, bytes):
         return s
     if isinstance(s, bytearray):
@@ -38,8 +33,7 @@ class IntegerUtils:
     """Class container for integer utility functions."""
 
     @staticmethod
-    def encode(data: Union[bytes, str],
-               encoding: str = "utf-8") -> bytes:
+    def encode(data: Union[bytes, str], encoding: str = "utf-8") -> bytes:
         """
         Encode to bytes.
 
@@ -59,10 +53,12 @@ class IntegerUtils:
             return data
 
     @staticmethod
-    def to_bytes(data_int: int,
-                 bytes_num: Optional[int] = None,
-                 endianness: Literal["little", "big"] = "big",
-                 signed: bool = False) -> bytes:
+    def to_bytes(
+        data_int: int,
+        bytes_num: Optional[int] = None,
+        endianness: Literal["little", "big"] = "big",
+        signed: bool = False,
+    ) -> bytes:
         """
         Convert integer to bytes.
 
@@ -80,8 +76,10 @@ class IntegerUtils:
         if data_int.__class__.__name__ == "mpz":
             data_int = int(data_int)
 
-        bytes_num = bytes_num or (
-            (data_int.bit_length() if data_int > 0 else 1) + 7) // 8
+        bytes_num = (
+            bytes_num
+            or ((data_int.bit_length() if data_int > 0 else 1) + 7) // 8
+        )
         return data_int.to_bytes(bytes_num, byteorder=endianness, signed=signed)
 
     @staticmethod
@@ -98,18 +96,17 @@ class IntegerUtils:
         return int(IntegerUtils.encode(data), 2)
 
     @staticmethod
-    def to_binary_str(data_int: int,
-                      zero_pad_bit_len: int = 0) -> str:
+    def to_binary_str(data_int: int, zero_pad_bit_len: int = 0) -> str:
         """
-            Convert the specified integer to a binary string.
+        Convert the specified integer to a binary string.
 
-            Args:
-                data_int (int)                  : Data integer
-                zero_pad_bit_len (int, optional): Zero pad length in bits, 0 if not specified
+        Args:
+            data_int (int)                  : Data integer
+            zero_pad_bit_len (int, optional): Zero pad length in bits, 0 if not specified
 
-            Returns:
-                str: Binary string
-            """
+        Returns:
+            str: Binary string
+        """
         return bin(data_int)[2:].zfill(zero_pad_bit_len)
 
 
@@ -117,8 +114,7 @@ class BytesUtils:
     """Class container for bytes utility functions."""
 
     @staticmethod
-    def to_binary_str(data_bytes: bytes,
-                      zero_pad_bit_len: int = 0) -> str:
+    def to_binary_str(data_bytes: bytes, zero_pad_bit_len: int = 0) -> str:
         """
         Convert the specified bytes to a binary string.
 
@@ -129,12 +125,16 @@ class BytesUtils:
         Returns:
             str: Binary string
         """
-        return IntegerUtils.to_binary_str(BytesUtils.to_integer(data_bytes), zero_pad_bit_len)
+        return IntegerUtils.to_binary_str(
+            BytesUtils.to_integer(data_bytes), zero_pad_bit_len
+        )
 
     @staticmethod
-    def to_integer(data_bytes: bytes,
-                   endianness: Literal["little", "big"] = "big",
-                   signed: bool = False) -> int:
+    def to_integer(
+        data_bytes: bytes,
+        endianness: Literal["little", "big"] = "big",
+        signed: bool = False,
+    ) -> int:
         """
         Convert the specified bytes to integer.
 
@@ -149,8 +149,9 @@ class BytesUtils:
         return int.from_bytes(data_bytes, byteorder=endianness, signed=signed)
 
     @staticmethod
-    def from_binary_str(data: Union[bytes, str],
-                        zero_pad_byte_len: int = 0) -> bytes:
+    def from_binary_str(
+        data: Union[bytes, str], zero_pad_byte_len: int = 0
+    ) -> bytes:
         """
         Convert the specified binary string to bytes.
 
@@ -166,8 +167,7 @@ class BytesUtils:
         )
 
     @staticmethod
-    def encode(data: Union[bytes, str],
-               encoding: str = "utf-8") -> bytes:
+    def encode(data: Union[bytes, str], encoding: str = "utf-8") -> bytes:
         """
         Encode to bytes.
 
@@ -211,7 +211,7 @@ def catch_sigint():
 
 
 def lower_escdelay():
-    os.environ.setdefault('ESCDELAY', '25')
+    os.environ.setdefault("ESCDELAY", "25")
 
 
 def memoize(f):

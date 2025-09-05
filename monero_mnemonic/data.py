@@ -1631,7 +1631,7 @@ class MoneroWordlist(Wordlist, metaclass=Singleton):
         "zodiac",
         "zombie",
         "zones",
-        "zoom"
+        "zoom",
     ]
 
 

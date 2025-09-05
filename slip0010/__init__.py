@@ -5,8 +5,7 @@ from typing import Tuple, Union
 from util import err_print
 
 
-def encode(data: Union[bytes, str],
-           encoding: str = "utf-8") -> bytes:
+def encode(data: Union[bytes, str], encoding: str = "utf-8") -> bytes:
     if isinstance(data, str):
         return data.encode(encoding)
     if isinstance(data, bytes):
@@ -16,7 +15,7 @@ def encode(data: Union[bytes, str],
 
 PUB_KEY_BYTE_LEN = 32
 
-_Q = 2 ** 255 - 19
+_Q = 2**255 - 19
 
 
 def _inv(x: int) -> int:
@@ -80,10 +79,10 @@ def derive_monero_master_key(seed: bytes) -> Tuple[bytes, bytes]:
     #         return False
     #     return True
 
-    curve = b'ed25519 seed'
+    curve = b"ed25519 seed"
     # seed = hexlify(seed)
     err_print(f"in {type(seed)!r}, {seed!r}")
-    I = hmac.new(curve, msg=seed, digestmod=sha512).digest() # noqa: E741
+    I = hmac.new(curve, msg=seed, digestmod=sha512).digest()  # noqa: E741
     key, chain_code = I[:32], I[32:]
     # I_L, chain_code = I[:32], I[32:]
     # err_print(f"I_L {I_L} {hexlify(I_L)}`")

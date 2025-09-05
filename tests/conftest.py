@@ -1,4 +1,3 @@
-
 def pytest_addoption(parser):
     parser.addoption(
         "--run-equivalence-tests",

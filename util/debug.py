@@ -8,9 +8,10 @@ __DBG_SCREEN: Screen
 
 DEBUG: bool
 
+
 def get_debug():
-    dbg = os.environ.get('DEBUG')
-    if dbg in [1, '1', 'true', 'y']:
+    dbg = os.environ.get("DEBUG")
+    if dbg in [1, "1", "true", "y"]:
         return True
     return False
 
@@ -29,7 +30,7 @@ def scr_debug_print(s: str) -> None:
         (y, x) = screen.getyx()
         (_, mx) = screen.getmaxyx()
         slack = mx - x
-        clear = ' ' * slack
+        clear = " " * slack
         tl = len(s)
         pad = 2
         padded = tl + 2 * pad

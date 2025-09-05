@@ -44,7 +44,8 @@ class Picker(Generic[OPTION_T]):
 
         if self.default_index >= len(self.options):
             raise ValueError(
-                "default_index should be less than the length of options")
+                "default_index should be less than the length of options"
+            )
 
         if self.multiselect and self.min_selection_count > len(self.options):
             raise ValueError(
@@ -109,8 +110,9 @@ class Picker(Generic[OPTION_T]):
                 )
                 prefix = f"{prefix} {symbol}"
 
-            option_as_str = option.label if isinstance(
-                option, Option) else option
+            option_as_str = (
+                option.label if isinstance(option, Option) else option
+            )
             lines.append(f"{prefix} {option_as_str}")
 
         return lines
@@ -137,7 +139,7 @@ class Picker(Generic[OPTION_T]):
         if current_line > max_rows:
             scroll_top = current_line - max_rows
 
-        lines_to_draw = lines[scroll_top: scroll_top + max_rows]
+        lines_to_draw = lines[scroll_top : scroll_top + max_rows]
 
         for line in lines_to_draw:
             screen.addnstr(y, x, line, max_x - 2)
@@ -201,7 +203,7 @@ def pick(
     multiselect: bool = False,
     min_selection_count: int = 0,
     screen: Optional["curses._CursesWindow"] = None,
-    wraparaound: bool = True
+    wraparaound: bool = True,
 ):
     picker: Picker = Picker(
         options,

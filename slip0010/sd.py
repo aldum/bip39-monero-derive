@@ -50,7 +50,9 @@ class SeedDerivation(object):
         self.master_seed = seed
         self.is_slip0010 = slip0010
         if path is None:
-            self.path = DEFAULT_BIP44_PATH if not slip0010 else DEFAULT_SLIP0010_PATH
+            self.path = (
+                DEFAULT_BIP44_PATH if not slip0010 else DEFAULT_SLIP0010_PATH
+            )
         else:
             self.path = path
         wl = Wallet.from_master_secret(seed, use_ed25519=slip0010)
@@ -78,10 +80,13 @@ class SeedDerivation(object):
         self.monero_master = seed
         self.electrum_words = " ".join(
             # mnemonic.mn_encode(self.monero_master, True))
-            mn_encode(self.monero_master, True))
+            mn_encode(self.monero_master, True)
+        )
 
         keys = crypto.generate_monero_keys(self.monero_master)
-        self.spend_sec, self.spend_pub = keys  # , self.view_sec, self.view_pub = keys
+        self.spend_sec, self.spend_pub = (
+            keys  # , self.view_sec, self.view_pub = keys
+        )
 
     # def creds(self, network_type=NetworkTypes.MAINNET):
     #     return monero.AccountCreds.new_wallet(
@@ -104,7 +109,9 @@ class SeedDerivation(object):
         return cleaned
 
     @classmethod
-    def from_mnemonics(cls, mnemonics, as_index=False, passphrase=b"", *args, **kwargs):
+    def from_mnemonics(
+        cls, mnemonics, as_index=False, passphrase=b"", *args, **kwargs
+    ):
         mnems = SeedDerivation.clean_input(mnemonics)
 
         # if as_index:
@@ -150,4 +157,5 @@ class SeedDerivation(object):
         deriv_args = {}
         deriv_args["slip0010"] = True
         return SeedDerivation.from_mnemonics(
-            mnem, passphrase=passp.encode("utf8"), **deriv_args)
+            mnem, passphrase=passp.encode("utf8"), **deriv_args
+        )

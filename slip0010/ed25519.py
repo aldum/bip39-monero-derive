@@ -5,8 +5,8 @@ from slip0010 import ed25519_2
 from slip0010 import keccak2
 
 b = 256
-q = 2 ** 255 - 19
-l = 2 ** 252 + 27742317777372353535851937790883648493 # noqa: E741
+q = 2**255 - 19
+l = 2**252 + 27742317777372353535851937790883648493  # noqa: E741
 
 
 def _offset(x, offset=0):
@@ -20,14 +20,13 @@ def bit(h, i):
 
 
 def decodeint(s):
-    return sum(2 ** i * bit(s, i) for i in range(0, b))
+    return sum(2**i * bit(s, i) for i in range(0, b))
 
 
 def encodeint(y):
     bits = [(y >> i) & 1 for i in range(b)]
     return bytes(
-        [(sum([bits[i * 8 + j] << j for j in range(8)]))
-         for i in range(b // 8)]
+        [(sum([bits[i * 8 + j] << j for j in range(8)])) for i in range(b // 8)]
     )
 
 

@@ -17,7 +17,7 @@ class TestVector:
 class JSONUtils:
     @staticmethod
     def load_json_file(filename: str) -> str:
-        f = open(filename, encoding='utf-8')
+        f = open(filename, encoding="utf-8")
 
         data = json.load(f)
 
@@ -35,7 +35,10 @@ class JSONUtils:
                 [seed, bip39, passp, ent] = line
             base_hex = unhexlify(seed)
             ent_b = unhexlify(ent)
-            return TestVector(base_hex, bip39, passp, ent_b, monero_mnem, public_addr)
+            return TestVector(
+                base_hex, bip39, passp, ent_b, monero_mnem, public_addr
+            )
+
         return [to_vect(line) for line in data]
 
     @staticmethod

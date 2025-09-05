@@ -17,6 +17,7 @@ pyinstaller = "^6.13.0"
 ed25519 = "^1.5"
 base58 = "^2.1.1"
 pyrefly = "^0.31.0"
+ruff = "^0.12.12"
 
 [tool.poetry.group.test.dependencies]
 pytest = "^7.3.1"
@@ -35,7 +36,7 @@ script = "bip39_monero_derive:main"
 filterwarnings = ["ignore::pytest.PytestCollectionWarning"]
 
 [tool.ruff]
-line-length = 100
+line-length = 80
 
 [tool.pyrefly]
 project-includes = ["."]

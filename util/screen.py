@@ -5,13 +5,13 @@ from . import Screen
 
 def yesno_to_bool(yn: str) -> bool:
     ci = yn.lower()
-    return ci in ('yes', 'y')
+    return ci in ("yes", "y")
 
 
 def bool_to_yesno(b: bool) -> str:
     if b:
-        return 'yes'
-    return 'no'
+        return "yes"
+    return "no"
 
 
 def fit_output(screen: Screen, s: str) -> None:
@@ -35,23 +35,23 @@ def advance_line(screen: Screen):
     if ny >= my - 1:
         screen.clear()
         ny = 0
-    screen.addstr(ny, 0, '')
+    screen.addstr(ny, 0, "")
 
 
 def break_output(s: str, mx: int = 70) -> str:
-    words = s.split(' ')
+    words = s.split(" ")
     broken = []
-    line = ''
+    line = ""
     for w in words:
         wl = len(w)
         ll = len(line)
         if ll + 1 + wl <= mx:
-            line = f'{line} {w}'
+            line = f"{line} {w}"
         else:
             broken.append(line.strip())
             line = w
     broken.append(line.strip())
-    return '\n'.join(broken)
+    return "\n".join(broken)
 
 
 def break_output_screen(screen: Screen, s: str) -> str:

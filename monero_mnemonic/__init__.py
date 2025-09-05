@@ -8,18 +8,19 @@ from .data import wordlist
 n = wordlist.WORDS_LIST_NUM
 
 
-def byteschunk_to_words(bytes_chunk: bytes,
-                        endianness: Literal["little", "big"]) -> List[str]:
+def byteschunk_to_words(
+    bytes_chunk: bytes, endianness: Literal["little", "big"]
+) -> List[str]:
     """
-        Get words from a bytes chunk.
+    Get words from a bytes chunk.
 
-        Args:
-            bytes_chunk (bytes)                  : Bytes chunk
-            endianness ("big" or "little")       : Bytes endianness
+    Args:
+        bytes_chunk (bytes)                  : Bytes chunk
+        endianness ("big" or "little")       : Bytes endianness
 
-        Returns:
-            list[str]: 3 word indexes
-        """
+    Returns:
+        list[str]: 3 word indexes
+    """
     int_chunk = BytesUtils.to_integer(bytes_chunk, endianness=endianness)
 
     word1_idx = int_chunk % n
@@ -67,12 +68,13 @@ def mn_encode(message: bytes, checksum=False) -> List[str]:
     message = hexlify(message)
     for i in range(0, len(message), 8):
         message = (
-            message[0:i] +
-            mn_swap_endian_4byte(message[i: i + 8]) + message[i + 8:]
+            message[0:i]
+            + mn_swap_endian_4byte(message[i : i + 8])
+            + message[i + 8 :]
         )
 
     for i in range(len(message) // 8):
-        word = message[8 * i: 8 * i + 8]
+        word = message[8 * i : 8 * i + 8]
         x = int(word, 16)
         w1 = x % n
         w2 = ((x // n) + w1) % n
@@ -105,14 +107,16 @@ def encode(entropy_bytes: bytes) -> List[str]:
     entropy_byte_len = bytes(len(entropy_bytes))
     if not _is_valid_entropy_len(entropy_byte_len):
         raise ValueError(
-            f"Entropy byte length ({entropy_byte_len!r}) is not valid")
+            f"Entropy byte length ({entropy_byte_len!r}) is not valid"
+        )
 
     # Consider 4 bytes at a time, 4 bytes represent 3 words
     mnemonic = []
     BL = 4
     for i in range(len(entropy_bytes) // BL):
         mnemonic += byteschunk_to_words(
-            entropy_bytes[i * BL:(i * BL) + BL], "little")
+            entropy_bytes[i * BL : (i * BL) + BL], "little"
+        )
         # entropy_bytes[i * BL:(i * BL) + BL], "big")
 
     return mnemonic
@@ -120,6 +124,7 @@ def encode(entropy_bytes: bytes) -> List[str]:
 
 def encode_int(seed: int) -> List[str]:
     return encode(IntegerUtils.to_bytes(seed))
+
 
 # def encode_int(seed: int) -> str:
 #     hexstr = IntegerUtils.to_binary_str(seed)
@@ -148,12 +153,11 @@ def decode(phrase: List[str]) -> str:
     out = ""
 
     for i in range(len(phrase) // 3):
-        word1, word2, word3 = phrase[3 * i: 3 * i + 3]
+        word1, word2, word3 = phrase[3 * i : 3 * i + 3]
         w1 = wordlist.get_word_idx_unsafe(word1)
         w2 = wordlist.get_word_idx_unsafe(word2) % n
         w3 = wordlist.get_word_idx_unsafe(word3) % n
-        x = w1 + n * ((w2 - w1) % n) + n * \
-            n * ((w3 - w2) % n)
+        x = w1 + n * ((w2 - w1) % n) + n * n * ((w3 - w2) % n)
         # out += f"%08{x}"
         out += endian_swap(f"%08{x}")
     return out
@@ -164,7 +168,7 @@ def endian_swap(word: str) -> str:
 
     :rtype: str
     """
-    return "".join([word[i: i + 2] for i in [6, 4, 2, 0]])
+    return "".join([word[i : i + 2] for i in [6, 4, 2, 0]])
 
 
 def get_checksum(phrase_split: List[str]) -> str:

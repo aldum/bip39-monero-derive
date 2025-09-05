@@ -10,7 +10,7 @@ Char = Union[str, int]
 
 
 class Input:
-    Special = Literal['esc', 'enter', 'backspace', 'del', 'space']
+    Special = Literal["esc", "enter", "backspace", "del", "space"]
 
     empty: bool = False
     char: Optional[str] = None
@@ -24,16 +24,16 @@ class Input:
             return
 
         self.control = asc.unctrl(got)
-        if got in ["\x08", 263, '\x97']:
-            self.special = 'backspace'
-        elif got in ["\x20", ' ']:
-            self.special = 'space'
+        if got in ["\x08", 263, "\x97"]:
+            self.special = "backspace"
+        elif got in ["\x20", " "]:
+            self.special = "space"
         elif got == "\x1b":
-            self.special = 'esc'
+            self.special = "esc"
         elif got == "\x0a":
-            self.special = 'enter'
+            self.special = "enter"
         elif got in ["\x7f", 330]:
-            self.special = 'del'
+            self.special = "del"
         elif asc.isgraph(got):
             ch = got
             if isinstance(got, int):
@@ -53,23 +53,23 @@ class Input:
                 self.char = got
 
     def is_Esc(self) -> bool:
-        return self.special == 'esc'
+        return self.special == "esc"
 
     def is_enter(self) -> bool:
-        return self.special == 'enter'
+        return self.special == "enter"
 
     def is_space(self) -> bool:
-        return self.special == 'space'
+        return self.special == "space"
 
     def is_bksp(self) -> bool:
-        return self.special == 'backspace'
+        return self.special == "backspace"
 
     @staticmethod
     def get_empty():
         return Input(None)
 
     @staticmethod
-    def read_input(screen: Screen, wide: bool = False) -> Optional['Input']:
+    def read_input(screen: Screen, wide: bool = False) -> Optional["Input"]:
         try:
             key: Char = screen.get_wch()
             # screen.addstr(f"got: {key} {type(key)}\n")

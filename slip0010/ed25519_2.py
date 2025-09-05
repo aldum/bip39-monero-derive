@@ -48,8 +48,8 @@ int2byte = operator.methodcaller("to_bytes", 1, "big")
 
 
 b = 256
-q = 2 ** 255 - 19
-l = 2 ** 252 + 27742317777372353535851937790883648493 # noqa: E741
+q = 2**255 - 19
+l = 2**252 + 27742317777372353535851937790883648493  # noqa: E741
 
 
 def H(m):
@@ -82,7 +82,7 @@ def inv(z):
 
 
 d = -121665 * inv(121666) % q
-I = pow(2, (q - 1) // 4, q) # noqa: E741
+I = pow(2, (q - 1) // 4, q)  # noqa: E741
 
 
 def xrecover(y):
@@ -189,7 +189,10 @@ def scalarmult_B(e):
 def encodeint(y):
     bits = [(y >> i) & 1 for i in range(b)]
     return b"".join(
-        [int2byte(sum([bits[i * 8 + j] << j for j in range(8)])) for i in range(b // 8)]
+        [
+            int2byte(sum([bits[i * 8 + j] << j for j in range(8)]))
+            for i in range(b // 8)
+        ]
     )
 
 
@@ -200,7 +203,10 @@ def encodepoint(P):
     y = (y * zi) % q
     bits = [(y >> i) & 1 for i in range(b - 1)] + [x & 1]
     return b"".join(
-        [int2byte(sum([bits[i * 8 + j] << j for j in range(8)])) for i in range(b // 8)]
+        [
+            int2byte(sum([bits[i * 8 + j] << j for j in range(8)]))
+            for i in range(b // 8)
+        ]
     )
 
 
@@ -214,14 +220,14 @@ def publickey_unsafe(sk):
     See module docstring.  This function should be used for testing only.
     """
     h = H(sk)
-    a = 2 ** (b - 2) + sum(2 ** i * bit(h, i) for i in range(3, b - 2))
+    a = 2 ** (b - 2) + sum(2**i * bit(h, i) for i in range(3, b - 2))
     A = scalarmult_B(a)
     return encodepoint(A)
 
 
 def Hint(m):
     h = H(m)
-    return sum(2 ** i * bit(h, i) for i in range(2 * b))
+    return sum(2**i * bit(h, i) for i in range(2 * b))
 
 
 def signature_unsafe(m, sk, pk):
@@ -230,8 +236,10 @@ def signature_unsafe(m, sk, pk):
     See module docstring.  This function should be used for testing only.
     """
     h = H(sk)
-    a = 2 ** (b - 2) + sum(2 ** i * bit(h, i) for i in range(3, b - 2))
-    r = Hint(intlist2bytes([indexbytes(h, j) for j in range(b // 8, b // 4)]) + m)
+    a = 2 ** (b - 2) + sum(2**i * bit(h, i) for i in range(3, b - 2))
+    r = Hint(
+        intlist2bytes([indexbytes(h, j) for j in range(b // 8, b // 4)]) + m
+    )
     R = scalarmult_B(r)
     S = (r + Hint(encodepoint(R) + pk + m) * a) % l
     return encodepoint(R) + encodeint(S)
@@ -247,11 +255,11 @@ def isoncurve(P):
 
 
 def decodeint(s):
-    return sum(2 ** i * bit(s, i) for i in range(0, b))
+    return sum(2**i * bit(s, i) for i in range(0, b))
 
 
 def decodepoint(s):
-    y = sum(2 ** i * bit(s, i) for i in range(0, b - 1))
+    y = sum(2**i * bit(s, i) for i in range(0, b - 1))
     x = xrecover(y)
     if x & 1 != bit(s, b - 1):
         x = q - x
