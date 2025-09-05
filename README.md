@@ -12,7 +12,7 @@ Convert your English BIP39 mnemonic into a 25-word Monero mnemonic according to 
 
 ##### Arch-based
 
-`python python-poetry`
+`python`
 
 ##### Debian-based
 
@@ -24,6 +24,6 @@ The packaged version of poetry is too old, so it needs to be installed via pip.
 ```shell
 python3 -m venv .venv
 source .venv/bin/activate
-pip install poetry # for debian-based systems
+pip install poetry
 poetry install
 ```
